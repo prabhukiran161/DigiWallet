@@ -17,10 +17,39 @@ export default function Home() {
  const [user,setUser]=useState<{name:string}|null>(null),[wallet,setWallet]=useState<Wallet|null>(null),[institutions,setInstitutions]=useState<Institution[]>([]);
  const [loading,setLoading]=useState(true),[error,setError]=useState(''),[view,setView]=useState<View>('Home'),[modal,setModal]=useState(''),[entry,setEntry]=useState<EventType>('expense');
  const [day,setDay]=useState(''),[month,setMonth]=useState(()=>localDate(new Date().toISOString(),'Asia/Kolkata').slice(0,7)),[notice,setNotice]=useState(''),[hidden,setHidden]=useState(false),[filter,setFilter]=useState<AccountFilter>('All');
- const load=useCallback(async()=>{setLoading(true);setError('');try{const auth=await fetch('/api/auth').then(r=>r.json());setUser(auth.user);if(auth.user){const res=await fetch('/api/wallet');const data=await res.json();if(!res.ok)throw new Error(data.error);setWallet(data.wallet);setInstitutions(data.institutions);}}catch(err){setError((err as Error).message);}finally{setLoading(false);}},[]);
+ const load=useCallback(async()=>{
+  setLoading(true);setError('');
+  try{
+    const rAuth=await fetch('/api/auth');
+    const textAuth=await rAuth.text().catch(()=>'');
+    let authData:{user?:{name:string}|null;error?:string}={};
+    try{authData=JSON.parse(textAuth);}catch{}
+    if(!rAuth.ok)throw new Error(authData.error||`Authentication service error (${rAuth.status})`);
+    setUser(authData.user||null);
+    if(authData.user){
+      const res=await fetch('/api/wallet');
+      const textWallet=await res.text().catch(()=>'');
+      let data:{wallet?:Wallet;institutions?:Institution[];error?:string}={};
+      try{data=JSON.parse(textWallet);}catch{}
+      if(!res.ok)throw new Error(data.error||`Wallet service error (${res.status})`);
+      if(data.wallet)setWallet(data.wallet);
+      if(data.institutions)setInstitutions(data.institutions);
+    }
+  }catch(err){setError((err as Error).message);}
+  finally{setLoading(false);}
+ },[]);
  useEffect(()=>{void load();},[load]);
  useEffect(()=>{if(!notice)return;const timer=setTimeout(()=>setNotice(''),3500);return ()=>clearTimeout(timer);},[notice]);
- async function save(action:string,data:unknown) {const res=await fetch('/api/wallet',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action,data})});const result=await res.json();if(!res.ok)throw new Error(result.error||'Unable to save. Please retry.');setWallet(result.wallet);if(result.institutions)setInstitutions(result.institutions);setNotice('Saved');}
+ async function save(action:string,data:unknown) {
+  const res=await fetch('/api/wallet',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action,data})});
+  const text=await res.text().catch(()=>'');
+  let result:{wallet?:Wallet;institutions?:Institution[];error?:string}={};
+  try{result=JSON.parse(text);}catch{}
+  if(!res.ok)throw new Error(result.error||(text?text.slice(0,100):`Unable to save (${res.status}).`));
+  if(result.wallet)setWallet(result.wallet);
+  if(result.institutions)setInstitutions(result.institutions);
+  setNotice('Saved');
+ }
  function navigate(next:View){setView(next);setDay('');window.scrollTo({top:0,behavior:'instant'});}
  function record(type:EventType='expense'){setEntry(type);setModal('transaction');}
  function changeMonth(n:number){const [y,m]=month.split('-').map(Number),date=new Date(y,m-1+n,1);setMonth(`${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,'0')}`);setDay('');}
