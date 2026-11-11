@@ -1,0 +1,8 @@
+node_modules/
+.next/
+data/
+work/
+*.tsbuildinfo
+.env*
+UI_References/
+Project Document.docx

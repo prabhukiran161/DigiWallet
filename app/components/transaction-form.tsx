@@ -1,0 +1,53 @@
+'use client';
+import {useMemo,useRef,useState} from 'react';
+import {ArrowRight,Check,ChevronLeft,ArrowDownLeft,ArrowUpRight} from 'lucide-react';
+import {post,balance,summary,type Wallet,type Command,type EventType,type AccountType} from '@/lib/ledger';
+import {currency,labels,nowLocal} from '@/lib/display';
+import {Field,InfoNote,type Save} from './primitives';
+import {CategoryIcon} from './category-icon';
+const credit:EventType[]=['income','borrow','receive','refund','cardPayment','invest','capitalReturn'];
+const debit:EventType[]=['expense','transfer','lend','repay','invest','cardPayment','release'];
+export function TransactionForm({wallet,save,onDone,initialType='expense'}:{wallet:Wallet;save:Save;onDone:()=>void;initialType?:EventType}) {
+ const [direction,setDirection]=useState(credit.includes(initialType)?'credit':'debit'),[type,setType]=useState<EventType>(initialType);
+ const [data,setData]=useState<Record<string,string>>({amount:'',description:'',date:nowLocal(),category:wallet.categories.find(c=>c.id==='other'&&!c.archived)?.id||wallet.categories.find(c=>!c.archived)?.id||'',reserve:'yes'});
+ const [error,setError]=useState(''),[busy,setBusy]=useState(false),[review,setReview]=useState(false),keys=useRef(new Map<string,string>());
+ const set=(key:string,value:string)=>setData(d=>({...d,[key]:value}));
+ const sourceTypes:AccountType[]=type==='expense'?['bank','cash','card']:['borrow','invest','capitalReturn','cardPayment'].includes(type)?['bank']:type==='refund'?['bank','cash','card']:['bank','cash'];
+ const accounts=wallet.accounts.filter(a=>!a.archived&&sourceTypes.includes(a.type)),account=data.account&&accounts.some(a=>a.id===data.account)?data.account:accounts[0]?.id||'';
+ const targetType:Partial<Record<EventType,AccountType[]>>={borrow:['loan'],lend:['receivable'],repay:['loan'],receive:['receivable'],invest:['investment'],capitalReturn:['investment'],cardPayment:['card'],transfer:['bank','cash']};
+ const targets=wallet.accounts.filter(a=>!a.archived&&a.id!==account&&targetType[type]?.includes(a.type)),optionalTarget=type==='borrow'||type==='lend',target=data.target&&targets.some(a=>a.id===data.target)?data.target:optionalTarget?'':targets[0]?.id||'';
+ const allowFunding=['expense','invest','lend','transfer','cardPayment','repay','release'].includes(type);
+ const input=(key:string,label:string,props:React.InputHTMLAttributes<HTMLInputElement>={})=><Field label={label}><input value={data[key]||''} onChange={e=>set(key,e.target.value)} {...props}/></Field>;
+ const command=useMemo(()=>{
+  const date=data.date&&Number.isFinite(Date.parse(data.date))?new Date(data.date).toISOString():'';
+  const c:Command={key:'preview',type,account,amount:data.amount,description:data.description,date,category:data.category,notes:data.notes||''};
+  if(target)c.target=target;
+  if((type==='borrow'||type==='lend')&&!target){c.counterparty=data.counterparty||'';c.loanType=data.loanType||'Personal loan';c.purpose=data.purpose||'';c.terms=data.terms||'';c.dueDate=data.dueDate||'';}
+  if(type==='borrow'){c.reserve=data.reserve==='yes';c.purpose=data.purpose||'';}
+  if(type==='receive'||type==='repay')c.interest=data.interest||'0';
+  if(type==='repay'){c.fee=data.fee||'0';c.returnUnused=data.returnUnused==='yes';}
+  if(allowFunding&&data.allocation&&(type!=='repay'||c.returnUnused))c.allocation=data.allocation;
+  if(type==='refund')c.original=data.original;return c;
+ },[type,account,target,data,allowFunding]);
+ let preview:Wallet|undefined,previewError='';try{if(data.amount&&data.description)preview=post(wallet,command);}catch(err){previewError=(err as Error).message;}
+ const changed=preview?.accounts.filter(a=>!wallet.accounts.some(old=>old.id===a.id)||balance(preview!,a.id)!==balance(wallet,a.id));
+ async function confirm(){if(!preview)return;setBusy(true);setError('');const payload=JSON.stringify(command);let key=keys.current.get(payload);if(!key){key=crypto.randomUUID();keys.current.set(payload,key);}try{await save('transaction',{...command,key});onDone();}catch(err){setError((err as Error).message);}finally{setBusy(false);}}
+ if(review)return <div className="review-screen"><button className="text-button" disabled={busy} onClick={()=>setReview(false)}><ChevronLeft size={16}/>Edit details</button><div className="review-heading"><span className="review-icon"><Check size={26}/></span><h3>Ready to record</h3><p>{data.description}</p></div><div className="review-meta"><span>{labels[type]}</span><span>{new Date(command.date).toLocaleDateString('en-IN')}</span></div>{preview&&<section className="preview" aria-label="Balance preview"><h3>Balances after</h3>{changed?.map(a=><div key={a.id}><span>{a.name}</span><strong>{currency(balance(preview!,a.id))}</strong></div>)}<div className="preview-total"><span>Available balance</span><strong>{currency(summary(preview,'').available)}</strong></div><div><span>Net worth</span><strong>{currency(summary(preview,'').netWorth)}</strong></div>{command.allocation&&<div><span>Remaining reservation</span><strong>{currency(preview.allocations.find(f=>f.id===command.allocation)?.remaining||0)}</strong></div>}</section>}{type==='borrow'&&<InfoNote label="Your bank and loan update together">The selected bank receives the funds. A linked loan records what you owe. Borrowing does not increase your net worth.</InfoNote>}{(error||previewError)&&<p role="alert" className="error">{error||previewError}</p>}<div className="form-footer"><button className="primary full" disabled={busy||!preview} onClick={()=>void confirm()}>{busy?'Saving…':'Confirm transaction'}<Check size={18}/></button></div></div>;
+ return <form onSubmit={e=>{e.preventDefault();if(!preview){setError(previewError||'Complete the required fields.');return;}setError('');setReview(true);}}>
+ <div className="segmented">{['debit','credit'].map(d=><button type="button" key={d} aria-pressed={direction===d} className={direction===d?'selected':''} onClick={()=>{setDirection(d);setType(d==='debit'?'expense':'income');setData(v=>({...v,target:'',allocation:''}));}}>{d==='debit'?<><ArrowUpRight size={17}/>Debit</>:<><ArrowDownLeft size={17}/>Credit</>}</button>)}</div>
+ <div className="amount-entry">{input('amount',['repay','receive'].includes(type)?'Principal amount (₹)':'Amount (₹)',{required:true,inputMode:'decimal',placeholder:'0.00',pattern:'[0-9]+(\\.[0-9]{1,2})?'})}</div>
+ <Field label="Transaction type"><select value={type} onChange={e=>{setType(e.target.value as EventType);setData(v=>({...v,target:'',allocation:'',original:''}));}}>{(direction==='credit'?credit:debit).map(t=><option key={t} value={t}>{labels[t]}</option>)}</select></Field>
+ <Field label={['borrow','income','receive','refund','capitalReturn'].includes(type)?'Receiving account':'Payment account'}><select value={account} required onChange={e=>set('account',e.target.value)}><option value="" disabled>Choose account</option>{accounts.map(a=><option key={a.id} value={a.id}>{a.name} · {currency(balance(wallet,a.id))}</option>)}</select></Field>
+ {targetType[type]&&<Field label={type==='borrow'?'Loan account':type==='lend'?'Lending record':'Linked account'}><select value={target} required={!optionalTarget} onChange={e=>set('target',e.target.value)}>{optionalTarget?<option value="">Create a new {type==='borrow'?'loan':'lending record'}</option>:<option value="" disabled>Choose account</option>}{targets.map(a=><option key={a.id} value={a.id}>{a.name}</option>)}</select></Field>}
+ {(type==='borrow'||type==='lend')&&!target&&<div className="inset"><h3>{type==='borrow'?'Loan details':'Lending details'}</h3>{input('counterparty',type==='borrow'?'Lender / institution':'Borrower',{required:true,placeholder:type==='borrow'?'Who are you borrowing from?':'Who are you lending to?'})}{type==='borrow'&&input('loanType','Loan type',{placeholder:'Personal loan, gold loan…'})}{input('purpose','Purpose',{placeholder:'e.g. Startup'})}</div>}
+ {type==='borrow'&&<label className="check"><input type="checkbox" checked={data.reserve==='yes'} onChange={e=>set('reserve',e.target.checked?'yes':'no')}/><span>Reserve for this purpose</span></label>}
+ {['repay','receive'].includes(type)&&<div className="form-grid">{input('interest','Interest (₹)',{inputMode:'decimal',placeholder:'0.00'})}{type==='repay'&&input('fee','Fee (₹)',{inputMode:'decimal',placeholder:'0.00'})}</div>}
+ {type==='repay'&&<label className="check"><input type="checkbox" checked={data.returnUnused==='yes'} onChange={e=>set('returnUnused',e.target.checked?'yes':'no')}/><span>Return unused reserved principal</span></label>}
+ {allowFunding&&(type!=='repay'||data.returnUnused==='yes')&&<Field label="Funding source"><select value={data.allocation||''} onChange={e=>set('allocation',e.target.value)} required={type==='release'||(type==='repay'&&data.returnUnused==='yes')}><option value="">Own funds</option>{wallet.allocations.filter(f=>f.remaining>0).map(f=><option key={f.id} value={f.id}>{f.purpose} · {currency(f.remaining-f.committed)} free · {wallet.accounts.find(a=>a.id===f.holding)?.name}</option>)}</select></Field>}
+ {type==='refund'&&<Field label="Original expense"><select required value={data.original||''} onChange={e=>set('original',e.target.value)}><option value="">Choose expense</option>{wallet.events.filter(e=>e.type==='expense'&&e.command?.account===account&&!e.command.allocation).map(e=><option key={e.id} value={e.id}>{e.description} · {currency(e.expense)}</option>)}</select></Field>}
+ {['expense','repay'].includes(type)&&<fieldset className="category-picker"><legend>Category</legend><div>{wallet.categories.filter(c=>!c.archived).map(c=><button key={c.id} type="button" className={data.category===c.id?'selected':''} aria-pressed={data.category===c.id} onClick={()=>set('category',c.id)}><CategoryIcon category={c.id} size={17}/>{c.name}</button>)}</div></fieldset>}
+ {input('description','Description',{required:true,maxLength:200,placeholder:'What was this for?'})}
+ <details className="disclosure"><summary>Date, notes & more</summary>{input('date','Date and time (device local)',{type:'datetime-local',required:true})}{input('notes','Notes',{maxLength:2000,placeholder:'Optional'})}{(type==='borrow'||type==='lend')&&!target&&<>{input('dueDate','Due date',{type:'date'})}{input('terms','Agreed interest / terms',{placeholder:'Optional; entered manually'})}</>}</details>
+ {(error||previewError)&&<p role="alert" className="error">{error||previewError}</p>}{!accounts.length&&<p className="notice">Add a suitable account before recording this transaction.</p>}<div className="form-footer"><button className="primary full" disabled={!preview}>Review transaction<ArrowRight size={18}/></button></div>
+ </form>;
+}
