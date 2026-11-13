@@ -11,7 +11,8 @@
     "build": "next build --webpack",
     "start": "next start --hostname 127.0.0.1",
     "test": "tsx --test tests/*.test.ts",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "db": "tsx scripts/database.ts"
   },
   "dependencies": {
     "lucide-react": "^0.468.0",

@@ -1,5 +1,12 @@
-export function sameOrigin(request:Request):boolean {
- const origin=request.headers.get('origin'),host=request.headers.get('host');
- if(!origin||!host)return false;
- try {const url=new URL(origin);return ['http:','https:'].includes(url.protocol)&&url.host===host;}catch{return false;}
+export function sameOrigin(request: Request): boolean {
+  const origin = request.headers.get("origin");
+  const host = request.headers.get("host");
+  if (!origin || !host) return false;
+
+  try {
+    const url = new URL(origin);
+    return ["http:", "https:"].includes(url.protocol) && url.host === host;
+  } catch {
+    return false;
+  }
 }
