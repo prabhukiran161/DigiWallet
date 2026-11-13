@@ -1,3 +1,5 @@
+Storage update: [PostgreSQL-only setup](POSTGRES-ONLY.md) supersedes earlier adapter/fallback descriptions below. Historical test results remain historical evidence, not verification of the current database integration.
+
 # Project status — account and transaction management
 
 13 November 2026. Implementation is complete in source for the approved revised rules. Local validation is complete as detailed below; live PostgreSQL and interactive browser/device validation remain outstanding. The initial request for transaction deletion was explicitly withdrawn by the user.

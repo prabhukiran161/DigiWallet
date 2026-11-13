@@ -1,3 +1,5 @@
+Storage update: [PostgreSQL-only setup](POSTGRES-ONLY.md) supersedes earlier adapter/fallback descriptions below. Historical test results remain historical evidence, not verification of the current database integration.
+
 # DigiWallet implementation contract
 
 Source: Project Document.docx, 11 November 2026, and confirmed decisions in source chat 6af3e207-f12c-83e8-aa66-9ed82b11764b. The original document was located and read in C:\Users\prabh\Programs\DigiWall, subsequently renamed by the user to C:\Users\prabh\Programs\DigiWallet. Its SHA-256 is 8DAB38BE53A958F8A527F62FE67343A52EEE2C365BA36C8EDD2CA67366987D19, identical to the previously located consolidated specification. The source folder initially contained only that document, with no existing repository. A text extraction is retained alongside this file. Application code was placed in the user-requested DigiWallet directory.

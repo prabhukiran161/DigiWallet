@@ -1,3 +1,5 @@
+Storage update: [PostgreSQL-only setup](POSTGRES-ONLY.md) supersedes earlier adapter/fallback descriptions below. Historical test results remain historical evidence, not verification of the current database integration.
+
 Current account/transaction management status: [MANAGEMENT-STATUS.md](MANAGEMENT-STATUS.md). The report below is an earlier baseline; its management-feature gaps are superseded by that report.
 
 # Delivery status

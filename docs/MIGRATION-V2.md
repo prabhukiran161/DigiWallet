@@ -2,7 +2,7 @@
 
 ## What changes
 
-The existing PostgreSQL wallets.state JSONB document remains the storage boundary. SQLite uses the same wallet document as text. No new tables or relational columns are required for this feature set. Existing users, sessions, wallets, institutions, attempts and audit tables remain in use.
+The existing PostgreSQL wallets.state JSONB document remains the storage boundary. Supabase PostgreSQL is now the only supported database backend. No new tables or relational columns are required for this feature set. Existing users, sessions, wallets, institutions, attempts and audit tables remain in use.
 
 The idempotent upgradeWallet function returns a cloned version-2 document on read and before each mutation. New defaults are persisted on the next successful atomic wallet write. Failed writes do not partially persist migrations. There is no bulk production rewrite and no historical balance change merely from reading a wallet.
 
@@ -31,7 +31,7 @@ No live Supabase schema, data, environment variables, GitHub branch or Vercel de
 
 ## Tests
 
-- npm test: accounting, management, SQLite storage, origin and server-rendered component checks.
+- npm test: accounting, management, configuration, origin and server-rendered component checks, plus opt-in PostgreSQL integration.
 - npm run typecheck and npm run build.
 - TEST_URL selects the isolated server used by tests/api-smoke.mjs and tests/management-api-smoke.mjs. Both scripts create synthetic users and transactions; run against a QA server, not production.
 - DIGIWALLET_TEST_POSTGRES_URL explicitly enables tests/postgres.test.ts. Supply a disposable PostgreSQL test database. It creates a randomly named dw_test_ schema, checks concurrent writes/edits/rollback, then removes only that schema. The test never falls back to DATABASE_URL and is skipped when the test variable is absent.
