@@ -1,7 +1,7 @@
 'use client';
 import {useCallback,useEffect,useState} from 'react';
 import {Wallet as WalletIcon,House,WalletCards,Plus,ArrowDownLeft,ArrowUpRight,ArrowLeftRight,ChevronLeft,ChevronRight,ChartNoAxesCombined,History as HistoryIcon,Eye,EyeOff,ArrowRight,LogOut,Check} from 'lucide-react';
-import {balance,localDate,summary,type Wallet,type EventType} from '@/lib/ledger';
+import {balance,localDate,summary,upgradeWallet,type Wallet,type EventType} from '@/lib/ledger';
 import {currency} from '@/lib/display';
 import {Auth} from './components/auth';
 import {Modal,Empty,InfoNote} from './components/primitives';
@@ -32,13 +32,13 @@ export default function Home() {
       let data:{wallet?:Wallet;institutions?:Institution[];error?:string}={};
       try{data=JSON.parse(textWallet);}catch{}
       if(!res.ok)throw new Error(data.error||`Wallet service error (${res.status})`);
-      if(data.wallet)setWallet(data.wallet);
+      if(data.wallet)setWallet(upgradeWallet(data.wallet));
       if(data.institutions)setInstitutions(data.institutions);
     }
   }catch(err){setError((err as Error).message);}
   finally{setLoading(false);}
  },[]);
- useEffect(()=>{void load();},[load]);
+ useEffect(()=>{const q=new URLSearchParams(window.location.search);const target=q.get('view');if(['Home','Accounts','Activity','Budget','Settings'].includes(target||''))setView(target as View);if(/^\d{4}-(0[1-9]|1[0-2])$/.test(q.get('month')||''))setMonth(q.get('month')!);void load();},[load]);
  useEffect(()=>{if(!notice)return;const timer=setTimeout(()=>setNotice(''),3500);return ()=>clearTimeout(timer);},[notice]);
  async function save(action:string,data:unknown) {
   const res=await fetch('/api/wallet',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action,data})});
@@ -46,7 +46,7 @@ export default function Home() {
   let result:{wallet?:Wallet;institutions?:Institution[];error?:string}={};
   try{result=JSON.parse(text);}catch{}
   if(!res.ok)throw new Error(result.error||(text?text.slice(0,100):`Unable to save (${res.status}).`));
-  if(result.wallet)setWallet(result.wallet);
+  if(result.wallet)setWallet(upgradeWallet(result.wallet));
   if(result.institutions)setInstitutions(result.institutions);
   setNotice('Saved');
  }
@@ -57,7 +57,7 @@ export default function Home() {
  if(error)return <main className="phone-shell loading"><p role="alert">{error}</p><button className="primary" onClick={()=>void load()}>Try again</button></main>;
  if(!user)return <Auth onDone={()=>void load()}/>;
  if(!wallet)return null;
- const s=summary(wallet,month),budget=wallet.budgets[month],active=wallet.accounts.filter(a=>!a.archived);
+ const s=summary(wallet,month),budget=wallet.budgets[month],active=wallet.accounts.filter(a=>!a.archived&&!a.closedAt);
  const accounts=active.filter(a=>filter==='All'||filter==='Bank & cash'&&['bank','cash'].includes(a.type)||filter==='Cards'&&a.type==='card'||filter==='Investments'&&a.type==='investment'||filter==='Borrowed'&&a.type==='loan'||filter==='Lent'&&a.type==='receivable');
  const amount=(n:number)=>hidden?'••••••':currency(n);
  const monthControl=<div className="month-picker"><button aria-label="Previous month" onClick={()=>changeMonth(-1)}><ChevronLeft size={16}/></button><input aria-label="Reporting month" type="month" value={month} onChange={e=>{if(e.target.value)setMonth(e.target.value);setDay('');}}/><button aria-label="Next month" onClick={()=>changeMonth(1)}><ChevronRight size={16}/></button></div>;
@@ -78,12 +78,12 @@ export default function Home() {
    {view==='Accounts'&&<>
     <div className="chips" aria-label="Account types">{filters.map(f=><button key={f} aria-pressed={filter===f} className={filter===f?'selected':''} onClick={()=>setFilter(f)}>{f}</button>)}</div>
     {['Borrowed','Lent','Investments'].includes(filter)&&<div className="section-total"><span>{filter==='Borrowed'?'Total outstanding':filter==='Lent'?'Owed to you':'Recorded value'}</span><strong>{currency(accounts.reduce((n,a)=>n+balance(wallet,a.id),0))}</strong><button className="primary soft" onClick={()=>record(filter==='Borrowed'?'borrow':filter==='Lent'?'lend':'invest')}><Plus size={16}/>{filter==='Borrowed'?'Borrow money':filter==='Lent'?'Lend money':'Contribute'}</button></div>}
-    {accounts.length?<AccountCards wallet={wallet} accounts={accounts} month={month} save={save}/>:<Empty title="No accounts here yet"><button className="primary" onClick={()=>setModal('account')}><Plus size={16}/>Add account</button></Empty>}
-    {wallet.accounts.some(a=>a.archived)&&<details className="disclosure"><summary>Archived accounts</summary><AccountCards wallet={wallet} accounts={wallet.accounts.filter(a=>a.archived)} month={month} save={save}/></details>}
+    {accounts.length?<AccountCards wallet={wallet} accounts={accounts} month={month} save={save} initialSelected={typeof window!=='undefined'?new URLSearchParams(window.location.search).get('account')||'':''}/>:<Empty title="No accounts here yet"><button className="primary" onClick={()=>setModal('account')}><Plus size={16}/>Add account</button></Empty>}
+    {wallet.accounts.some(a=>a.archived&&!a.closedAt)&&<details className="disclosure"><summary>Archived accounts</summary><AccountCards wallet={wallet} accounts={wallet.accounts.filter(a=>a.archived&&!a.closedAt)} month={month} save={save}/></details>}
    </>}
    {view==='Activity'&&<><div className="section-head"><span className="section-subtitle">All your money moves</span>{monthControl}</div><History wallet={wallet} month={month} day={day} onClearDay={()=>setDay('')}/><Heatmap wallet={wallet} month={month} onDay={d=>{setDay(d);window.scrollTo({top:0,behavior:'smooth'});}}/></>}
    {view==='Budget'&&<><div className="section-head"><span className="section-subtitle">Make it a good month</span>{monthControl}</div><BudgetView key={month} wallet={wallet} month={month} save={save}/><Heatmap wallet={wallet} month={month} onDay={d=>{navigate('Activity');setDay(d);}}/></>}
-   {view==='Settings'&&<><div className="profile-card"><span className="avatar large">{user.name.slice(0,1).toUpperCase()}</span><h2>{user.name}</h2><span className="pill">Personal wallet · INR</span></div><Settings wallet={wallet} save={save}/><button className="logout-button" onClick={async()=>{try{const r=await fetch('/api/auth',{method:'DELETE'});if(!r.ok)throw new Error('Could not sign out. Try again.');setUser(null);setWallet(null);}catch(e){setNotice((e as Error).message);}}}><LogOut size={17}/>Sign out</button></>}
+   {view==='Settings'&&<><div className="profile-card"><span className="avatar large">{user.name.slice(0,1).toUpperCase()}</span><h2>{user.name}</h2><span className="pill">Personal wallet · INR</span></div><Settings wallet={wallet} save={save} month={month}/><button className="logout-button" onClick={async()=>{try{const r=await fetch('/api/auth',{method:'DELETE'});if(!r.ok)throw new Error('Could not sign out. Try again.');setUser(null);setWallet(null);}catch(e){setNotice((e as Error).message);}}}><LogOut size={17}/>Sign out</button></>}
   </main>
   <nav className="bottom-nav" aria-label="Main navigation"><button aria-current={view==='Home'?'page':undefined} onClick={()=>navigate('Home')}><House size={21}/><span>Home</span></button><button aria-current={view==='Accounts'?'page':undefined} onClick={()=>navigate('Accounts')}><WalletCards size={21}/><span>Accounts</span></button><button className="nav-add" aria-label="Add transaction" onClick={()=>record()}><span><Plus size={25}/></span></button><button aria-current={view==='Activity'?'page':undefined} onClick={()=>navigate('Activity')}><HistoryIcon size={21}/><span>Activity</span></button><button aria-current={view==='Budget'?'page':undefined} onClick={()=>navigate('Budget')}><ChartNoAxesCombined size={21}/><span>Budget</span></button></nav>
   {notice&&<div role="status" className="toast"><Check size={17}/>{notice}</div>}

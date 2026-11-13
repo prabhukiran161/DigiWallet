@@ -1,3 +1,5 @@
+Latest update: [Account and transaction management](docs/MANAGEMENT-STATUS.md). See [wallet model migration and deployment](docs/MIGRATION-V2.md) for PostgreSQL-compatible changes and validation steps.
+
 # DigiWallet
 
 A runnable Next.js personal finance tracker built from the included **Project Document.docx** and its confirmed project decisions. This implementation covers the core daily accounting and loan workflows; it is not yet the complete production release described by the specification. See `docs/STATUS.md` for the precise gaps.
@@ -36,7 +38,7 @@ With the server running, `node tests/api-smoke.mjs` verifies the HTTP workflow u
 
 `app/` contains the interface and authenticated HTTP routes. `lib/ledger.ts` owns financial rules and rebuildable journal projections. `lib/store.ts` owns durable transactions and identity. `tests/` contains accounting, storage, origin and HTTP tests. `docs/` records the source, implementation decisions and remaining release work.
 
-Amounts are exact integer paise within a bounded safe-integer range. Inputs are parsed with BigInt before conversion; excess decimal precision is rejected. Wallet state and its journals are stored as one JSON aggregate per user inside a SQLite transaction. This simple local baseline is intentionally documented: it is not the normalized BIGINT/PostgreSQL architecture recommended for the final large-scale release.
+Amounts are exact integer paise within a bounded safe-integer range. Inputs are parsed with BigInt before conversion; excess decimal precision is rejected. Wallet state and its journals are stored as one JSON aggregate per user. With DATABASE_URL set, PostgreSQL stores it as JSONB and uses row-locked atomic writes; otherwise the local SQLite adapter is used. This simple local baseline is intentionally documented: it is not the normalized BIGINT/PostgreSQL architecture recommended for the final large-scale release.
 
 ## Data and deployment
 

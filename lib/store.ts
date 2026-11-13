@@ -3,7 +3,7 @@ import {mkdirSync} from 'node:fs';
 import {dirname,resolve} from 'node:path';
 import {randomBytes,scryptSync,timingSafeEqual,createHash,randomUUID} from 'node:crypto';
 import postgres from 'postgres';
-import {emptyWallet,type Wallet} from './ledger';
+import {emptyWallet,upgradeWallet,type Wallet} from './ledger';
 
 export interface Store {
   read(user: string): Promise<Wallet>;
@@ -26,8 +26,9 @@ export function normalize(name: string) {
 
 const digest = (token: string) => createHash('sha256').update(token).digest('hex');
 
-export function openPostgresStore(url = process.env.DATABASE_URL!): Store {
+export function openPostgresStore(url = process.env.DATABASE_URL!, options: {schema?:string} = {}): Store {
   const sql = postgres(url, {
+    ...(options.schema ? {connection: {search_path: options.schema}} : {}),
     max: 10,
     idle_timeout: 20,
     connect_timeout: 10,
@@ -38,7 +39,7 @@ export function openPostgresStore(url = process.env.DATABASE_URL!): Store {
     const rows = await sql`SELECT state FROM wallets WHERE user_id = ${user}`;
     if (!rows || rows.length === 0) throw new Error('Wallet not found.');
     const raw = rows[0].state;
-    return typeof raw === 'string' ? JSON.parse(raw) : (raw as Wallet);
+    return upgradeWallet(typeof raw === 'string' ? JSON.parse(raw) : (raw as Wallet));
   };
 
   const change = async (user: string, action: string, fn: (w: Wallet) => Wallet): Promise<Wallet> => {
@@ -46,7 +47,7 @@ export function openPostgresStore(url = process.env.DATABASE_URL!): Store {
       const rows = await tx`SELECT state FROM wallets WHERE user_id = ${user} FOR UPDATE`;
       if (!rows || rows.length === 0) throw new Error('Wallet not found.');
       const raw = rows[0].state;
-      const current: Wallet = typeof raw === 'string' ? JSON.parse(raw) : (raw as Wallet);
+      const current = upgradeWallet(typeof raw === 'string' ? JSON.parse(raw) : (raw as Wallet));
       const updated = fn(current);
       await tx`UPDATE wallets SET state = ${JSON.stringify(updated)}::jsonb, version = version + 1, updated_at = NOW() WHERE user_id = ${user}`;
       await tx`INSERT INTO audit (id, user_id, action, recorded_at) VALUES (${randomUUID()}, ${user}, ${action}, ${new Date().toISOString()})`;
@@ -171,7 +172,7 @@ export function openSqliteStore(path = process.env.DIGIWALLET_DB || (process.env
   const read = async (user: string): Promise<Wallet> => {
     const row = db.prepare('SELECT state FROM wallets WHERE user_id=?').get(user) as { state: string } | undefined;
     if (!row) throw new Error('Wallet not found.');
-    return JSON.parse(row.state);
+    return upgradeWallet(JSON.parse(row.state));
   };
 
   const change = async (user: string, action: string, fn: (w: Wallet) => Wallet): Promise<Wallet> => {
@@ -179,7 +180,7 @@ export function openSqliteStore(path = process.env.DIGIWALLET_DB || (process.env
     try {
       const row = db.prepare('SELECT state FROM wallets WHERE user_id=?').get(user) as { state: string } | undefined;
       if (!row) throw new Error('Wallet not found.');
-      const updated = fn(JSON.parse(row.state));
+      const updated = fn(upgradeWallet(JSON.parse(row.state)));
       db.prepare('UPDATE wallets SET state=?,version=version+1 WHERE user_id=?').run(JSON.stringify(updated), user);
       db.prepare('INSERT INTO audit VALUES(?,?,?,?)').run(randomUUID(), user, action, new Date().toISOString());
       db.exec('COMMIT');

@@ -1,3 +1,5 @@
+Current account/transaction management status: [MANAGEMENT-STATUS.md](MANAGEMENT-STATUS.md). The report below is an earlier baseline; its management-feature gaps are superseded by that report.
+
 # Delivery status
 
 11 November 2026. This is a runnable local implementation, not a claim that the full specification's production release gate is satisfied.
