@@ -41,12 +41,13 @@
   }
 }
 
-.action svg,
-.seeAll {
+.action svg {
   color: var(--accent);
+  stroke-opacity: 0.55;
 }
 
 .seeAll {
+  color: var(--accent);
   font-size: clamp(10px, 4vw, 16px);
   font-weight: 700;
 }
