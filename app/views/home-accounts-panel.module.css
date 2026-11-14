@@ -19,7 +19,7 @@
 }
 
 .action {
-  font-size: clamp(13px, 4.4vw, 16px);
+  font-size: clamp(13px, 4.4vw, 14px);
   font-weight: 700;
   line-height: 1.3;
   transition: background-color 150ms ease-in-out, color 150ms ease-in-out;

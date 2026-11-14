@@ -173,7 +173,7 @@ export function HomeView({
             onClick={run}
             className={`${accountsPanel.action} flex min-w-0 flex-col items-center justify-center gap-2.5 py-3`}
           >
-            <Icon size={26} strokeWidth={2.5} aria-hidden />
+            <Icon size={24} strokeWidth={2.5} aria-hidden />
             {label}
           </button>
         ))}
