@@ -1,37 +1,43 @@
 import postgres from 'postgres';
 import { resolve } from 'node:path';
-import { applyMigrations } from '../lib/store/migrations';
-import { backfillWallet, restoreJsonStorage } from '../lib/store/relational-store';
+import { readFile } from 'node:fs/promises';
+import { createHash } from 'node:crypto';
 import { requireDatabaseUrl } from '../lib/store/config';
 
 const [command, ...args] = process.argv.slice(2);
-const commands = ['status', 'migrate', 'backfill', 'activate', 'rollback'];
-if (!commands.includes(command)) throw new Error('Usage: npm run db -- status|migrate|backfill|activate|rollback [--all | --user ID]');
+const commands = ['status', 'migrate', 'reset'];
+if (!commands.includes(command)) throw new Error('Usage: npm run db -- status|migrate|reset --confirm-empty-development');
 // Explicit migration credential only: never silently use the production app URL.
 const url = requireDatabaseUrl(process.env.DIGIWALLET_MIGRATION_URL);
 const sql = postgres(url, { max: 1, prepare: false, connect_timeout: 10 });
 try {
-  if (command === 'migrate') {
-    if (args.length) throw new Error('migrate takes no additional arguments');
-    await applyMigrations(sql, resolve('database/migrations'));
-    console.log('Schema migrations applied. No wallets activated.');
+  if (command === 'migrate' || command === 'reset') {
+    if (command === 'reset' && !(args.length===1 && args[0]==='--confirm-empty-development')) throw new Error('Reset requires --confirm-empty-development.');
+    if (command === 'migrate' && args.length) throw new Error('migrate takes no additional arguments.');
+    const file=resolve('database/schema.sql');
+    const body=await readFile(file,'utf8');
+    const checksum=createHash('sha256').update(body).digest('hex');
+    await sql.begin(async tx=>{
+      await tx`SELECT pg_advisory_xact_lock(71904123)`;
+      await tx.unsafe('SET LOCAL search_path TO public');
+      if(command==='reset') {
+        await tx.unsafe(`DROP TABLE IF EXISTS dw_v3_wallet_meta,dw_v3_accounts,dw_v3_categories,dw_v3_events,dw_v3_lines,dw_v3_revisions,dw_v3_limits,dw_v3_allocations,dw_v3_commitments,dw_v3_budgets,dw_v3_budget_categories,dw_v3_deleted_accounts,dw_v3_management,attempts,audit,institutions,wallets,sessions,users,dw_rate_limits,dw_audit_log,dw_budgets,dw_loan_funding,dw_transaction_revisions,dw_transaction_entries,dw_transactions,dw_categories,dw_accounts,dw_sessions,dw_institutions,dw_wallets,dw_users,dw_schema_migrations CASCADE`);
+        await tx.unsafe('DROP FUNCTION IF EXISTS dw_check_balanced_transaction() CASCADE; DROP FUNCTION IF EXISTS dw_check_funding_account_types() CASCADE; DROP FUNCTION IF EXISTS dw_v3_check_journal() CASCADE;');
+      }
+      else {
+        const exists=await tx`SELECT to_regclass('public.dw_users') AS present`;
+        if(exists[0].present)throw new Error('DigiWallet schema already exists. Use the explicit development reset if it contains no data.');
+        const legacy=await tx`SELECT to_regclass('public.users') AS present`;
+        if(legacy[0].present)throw new Error('Old DigiWallet tables exist. Inspect data and use the explicit development reset.');
+      }
+      await tx.unsafe(body);
+      await tx`INSERT INTO dw_schema_migrations(name,checksum) VALUES('001_initial',${checksum})`;
+    });
+    console.log(command==='reset'?'DigiWallet-owned tables reset and new schema created.':'New DigiWallet schema created.');
   } else if (command === 'status') {
-    const rows = await sql`SELECT COALESCE(to_jsonb(wallets)->>'storage_mode','jsonb') AS mode,count(*)::int AS wallets FROM wallets GROUP BY 1`;
-    console.log(JSON.stringify(rows, null, 2));
-  } else {
-    const all = args.length === 1 && args[0] === '--all';
-    const user = args.length === 2 && args[0] === '--user' && args[1] ? args[1] : null;
-    if (!all && !user) throw new Error('Select --user ID or --all explicitly.');
-    if (all && command === 'rollback') await sql.unsafe("ALTER TABLE wallets ALTER COLUMN storage_mode SET DEFAULT 'jsonb'");
-    const users = user ? [{ user_id: user }] : await sql`SELECT user_id FROM wallets ORDER BY user_id`;
-    let processed = 0;
-    for (const row of users) {
-      if (command === 'rollback') await restoreJsonStorage(sql, row.user_id);
-      else await backfillWallet(sql, row.user_id, command === 'activate');
-      processed++;
-    }
-    if (all && command === 'activate') await sql.unsafe("ALTER TABLE wallets ALTER COLUMN storage_mode SET DEFAULT 'relational'");
-    console.log(JSON.stringify({ operation: command, processed }));
+    const tables=await sql`SELECT tablename FROM pg_tables WHERE schemaname='public' AND tablename LIKE 'dw_%' ORDER BY tablename`;
+    const counts=await sql`SELECT (SELECT count(*)::int FROM dw_users) users,(SELECT count(*)::int FROM dw_wallets) wallets,(SELECT count(*)::int FROM dw_accounts) accounts,(SELECT count(*)::int FROM dw_transactions) transactions`;
+    console.log(JSON.stringify({tables:tables.map(x=>x.tablename),counts:counts[0]}, null, 2));
   }
 } catch (error) {
   // Do not print connection URLs, wallet contents, or database error details.

@@ -1,74 +1,67 @@
-# Relational storage rollout
+# DigiWallet database schema
 
-## What is implemented
+## Design
 
-This release adds a **compatibility-first relational store**. It does not change authentication or financial rules and does not activate production wallets automatically.
+The database stores one row per independent record. Accounts, categories, transactions, journal entries, revisions, loan funding, and monthly category budgets have separate tables. A transaction updates only affected account and history rows; it does not replace a wallet JSON document.
 
-Tracked migrations live in `database/migrations/`. `001_initial.sql` captures the existing PostgreSQL bootstrap schema. `003_relational_wallet.sql` adds wallet storage selection and these tables:
-
-| Table | Data |
+| Table | Purpose |
 |---|---|
-| `dw_v3_wallet_meta` | Source version, checksum, timezone/schema metadata |
-| `dw_v3_accounts` | Account identities, types, opening amounts and descriptive fields |
-| `dw_v3_categories` | Category definitions |
-| `dw_v3_events` | Current journal/transaction headers |
-| `dw_v3_lines` | Signed journal postings |
-| `dw_v3_revisions` | Earlier commands and edit metadata |
-| `dw_v3_limits` | Dated credit-limit history |
-| `dw_v3_allocations` | Bank-held loan allocations and counters |
-| `dw_v3_commitments` | Legacy card-funding commitments |
-| `dw_v3_budgets` | Monthly budget totals |
-| `dw_v3_budget_categories` | Category budget allocations |
-| `dw_v3_deleted_accounts` | Historical deleted-account snapshots |
-| `dw_v3_management` | Account/category management history |
+| `dw_users` | Application users and salted password hashes. |
+| `dw_sessions` | Hashed sign-in tokens and expirations. |
+| `dw_wallets` | Per-user wallet settings, timezone, version, and timestamps. |
+| `dw_institutions` | Shared bank, investment, and lender catalog. |
+| `dw_accounts` | Bank, cash, card, investment, loan, and receivable accounts. Stores current balance in paise and dated credit-limit history. |
+| `dw_categories` | Per-wallet transaction categories. |
+| `dw_transactions` | Transaction header, date, amount, category, summary figures, and optional command details. |
+| `dw_transaction_entries` | Balanced signed entries that change accounts or internal equity/income/expense accounts. |
+| `dw_transaction_revisions` | Immutable earlier commands for corrections and retry protection. |
+| `dw_loan_funding` | Loan amount, purpose, holding bank, remaining amount, usage, and old card-funding commitments. |
+| `dw_budgets` | One row per wallet, month, and category; monthly totals are calculated with `SUM`. |
+| `dw_audit_log` | Operational actions, management history, and deleted-account snapshots. |
+| `dw_rate_limits` | Shared, expiring request limits for server instances. |
+| `dw_schema_migrations` | Applied schema version and checksum. |
 
-The `dw_v3_` names avoid collisions with existing tables. Text identifiers are preserved, including generated loan IDs and seeded institution IDs. Money columns use BIGINT constrained to JavaScript's exact integer range. Required financial fields become columns; optional metadata, command snapshots, revision payloads and historical per-event balance snapshots remain JSONB. Date strings retain their exact historical representation in this compatibility release. Typed date projections and transaction pagination are future query-layer work; do not assume text-date indexes correctly order arbitrary timezone offsets.
+There is no separate card table: credit cards are accounts with `type='card'`. IDs remain text because the application and generated loan accounts already use stable text identifiers. Money is integer paise, constrained to JavaScript's safe integer range. JSONB is limited to small flexible details, credit-limit history, transaction command/snapshot details, and legacy funding commitments; it is never the entire wallet.
 
-Institution strings are preserved as-is rather than being silently matched to catalog IDs. Existing audit records stay in `audit`, and detailed existing history is preserved in the new history tables. Standalone allocation-movement and request-deduplication tables are not introduced yet: command/revision history and existing ledger idempotency remain authoritative.
+Current account balances are stored for fast account/dashboard reads and updated inside the same transaction as their journal entries. Reads check the stored balance against the journal. A mismatch is reported instead of silently correcting the balance. Account name edits do not change historical opening-transaction descriptions.
 
-## Safety properties
+## Apply the schema
 
-- No production connection is used automatically by the migration tool. It requires `DIGIWALLET_MIGRATION_URL` explicitly.
-- Migration files are versioned with SHA-256 checksums and executed transactionally under an advisory lock. Applied files must not be edited; add another migration for later changes.
-- `backfill` copies and verifies data without changing the active storage mode.
-- `activate` locks one wallet, refreshes its relational copy from the latest JSON version, verifies the database round trip, then switches that wallet atomically.
-- Each wallet is independently resumable. An interrupted batch may have completed earlier wallets; rerunning is safe. It is not an all-users atomic switch.
-- Active relational writes update changed rows and the wallet version in one transaction. The original JSON is frozen, not continually rewritten.
-- Wallet reads use a repeatable-read snapshot. Changes serialize on the existing wallet row lock.
-- Composite foreign keys enforce ownership for child records. Deferred journal checks reject unbalanced postings and foreign/missing financial accounts while permitting internal equity/income/expense accounts.
-- Revision, management-history and deleted-account snapshots cannot be rewritten or removed by the relational adapter.
-- Legacy JSONB objects and legacy JSON-encoded strings are both supported.
-- Reconciliation compares all persisted wallet content, individual account balances and summaries. Missing and undefined optional JavaScript properties are equivalent after JSON persistence. Migration never resets original recording timestamps.
+From the project directory, configure `DIGIWALLET_MIGRATION_URL` privately in PowerShell. Use a Supabase direct or session-pooler connection. The tool deliberately does not fall back to `DATABASE_URL`; that connection is normally for the running application.
 
-## Database access model
+```powershell
+$secret = Read-Host 'Supabase PostgreSQL URL' -AsSecureString
+$env:DIGIWALLET_MIGRATION_URL = [System.Net.NetworkCredential]::new('', $secret).Password
+npm.cmd run db -- migrate
+npm.cmd run db -- status
+```
 
-This release keeps server-side custom sessions. Tables are not available for direct browser CRUD: RLS is enabled and PUBLIC/anon/authenticated table permissions are revoked by the migration. This includes the existing authentication/wallet tables. The current server and migration connection must use the trusted table-owning PostgreSQL role. Do not enable this migration for a restricted deployment role without first designing and testing its explicit permissions.
+For this development reset, confirm the database is the intended DigiWallet development project, then run:
 
-This is **not** a Supabase Auth/auth.uid()-policy implementation. Server endpoints still authenticate the session and select the correct user. Composite ownership constraints are additional protection, not a substitute for API authorization. Privileged database credentials remain server-only. A later Auth migration must design restricted-role permissions and per-user policies explicitly.
+```powershell
+npm.cmd run db -- reset --confirm-empty-development
+npm.cmd run db -- status
+```
 
-## Operator runbook
+Reset removes only named DigiWallet tables in `public` (including the previous `dw_v3_*` and old app tables), then creates the new schema. It does not drop Supabase-managed schemas such as `auth` or `storage`. It is destructive to DigiWallet tables and must never be aimed at a database whose data should be kept.
 
-Run from the project root with Node dependencies installed. Supply `DIGIWALLET_MIGRATION_URL` privately in the shell/environment. Do not paste credentials into source files or command logs. Use a direct/session connection suitable for schema migrations; the application can keep its existing pooler connection. Do not change Vercel `DATABASE_URL` merely to select relational storage.
+The SQL enables RLS and denies browser roles direct table access. The current app uses its own server-verified sessions and a trusted server-side PostgreSQL role. Do not expose the database password or privileged keys in the browser. The app must be deployed with the new code before it is used against this schema. Keep Vercel's server-only `DATABASE_URL` pointed at the same database and update/redeploy the code through the normal deployment flow.
 
-1. Back up the actual database and rehearse restoring it into an isolated environment. The local synthetic rehearsal is not a substitute for production-data verification.
-2. Deploy this backwards-compatible application build while wallets are still using JSON. Do not activate wallets until every serving instance understands relational storage.
-3. Run `npm run db -- migrate` against staging first, then the intended database. It adds tables and permissions; it does not switch wallets.
-4. Run `npm run db -- backfill --all`. A mismatch or unsupported historical shape aborts that wallet rather than silently dropping data.
-5. Inspect the staging application and financial reports. Use `npm run db -- status` for mode counts.
-6. During a maintenance window that stops registrations and wallet writes, run `npm run db -- activate --all`. After successful completion, the database default also changes so newly registered wallets use relational storage.
-7. Check `npm run db -- status`, then sign in and verify balances, history, borrowing, card repayment, editing and export before reopening writes.
-8. Retain legacy JSON and backups. This release intentionally contains no destructive retirement migration.
+Remove the migration URL when done:
 
-Use `--user USER_ID` instead of `--all` for a staging/canary wallet. Activating one user does not change the registration default. Status on a brand-new empty database requires the initial schema first.
+```powershell
+Remove-Item Env:DIGIWALLET_MIGRATION_URL
+Remove-Variable secret
+```
 
-For rollback while this build is still running, stop writes and run `npm run db -- rollback --all`. This exports the **current relational state including post-cutover writes** back to JSON before switching each wallet back. It also resets the registration default. Check mode counts and data before deploying an older build. Never manually flip storage_mode back to jsonb: the preserved JSON can be stale.
+## Query and write behavior
 
-The schema migration runner and CLI assume the standard configured database search path; do not target an unrelated schema. `--all` operations require the maintenance window to avoid registrations racing with the batch/default change.
+The current UI still asks for a complete wallet view, so the read endpoint assembles that response in one SQL statement. It no longer reads a JSON wallet from one database column. On a change, the server locks the user's wallet row, reads the wallet projection, applies existing ledger validation, and writes only rows whose values changed. Account changes update account rows; transaction changes update transaction and journal rows; budgets update the affected month/category rows. Changes, audit records, and wallet version commit or roll back together.
 
-## Verification and remaining rollout work
+The next performance step is adding paginated transaction endpoints and screen-specific dashboard/history queries, so the browser and server do not load all historical activity for every screen. The current architecture improves write scope and round trips but still reconstructs the accounting projection in application memory. Do not claim large-ledger performance until it has been measured.
 
-Tests cover exact codec preservation, loan-funded card repayment without double expenses, available balance/net worth, old metadata/commitments, transaction revisions, idempotency, composite ownership, deferred balancing, concurrent changes, rollback after an injected audit failure, backwards-compatible legacy operation, new relational registrations, and reverse export after new writes.
+Loan receipts create the loan account and bank journal entry. Purpose funding is held against the selected bank. Credit-card expenses remain separate from funding selection; card repayment can consume bank-held loan funds without recording the expense twice. Available balance and net worth remain separately derived measures.
 
-The full existing accounting engine still reconstructs/replays a wallet. Reads still assemble all records and verify a checksum; event balance snapshots can grow with account count. This release establishes a tested migration boundary, **not a demonstrated performance improvement for large wallets**. Next stages are paginated reads, SQL summaries, typed time projections, more selective replay, expanded structured audit events, and measured performance benchmarks. Supabase Auth migration remains a separate stage requiring identity mapping, recovery flow and deployment configuration.
+## Verification
 
-No production data, Supabase settings, Vercel settings, or users were changed during local implementation. Production backup restoration and reconciliation against actual data remain operator rollout requirements.
+Set `DIGIWALLET_TEST_POSTGRES_URL` to a disposable PostgreSQL database to run database integration tests. Tests create a random temporary schema and remove that schema after the run. Never point it to a database containing important data. The default suite skips these tests when the variable is absent.

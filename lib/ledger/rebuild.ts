@@ -27,7 +27,11 @@ export function rebuild(source: Wallet, commands: Command[]): Wallet {
         type: "opening",
         date: a.date,
         recordedAt: a.date,
-        description: `Opening balance · ${a.name}`,
+        // Account labels are mutable; an opening entry's original description
+        // is historical data and should not be rewritten by a later rename.
+        description:
+          source.events.find((e) => e.id === `opening-${a.id}`)?.description ||
+          `Opening balance · ${a.name}`,
         notes: "",
         category: "",
         lines: amount
