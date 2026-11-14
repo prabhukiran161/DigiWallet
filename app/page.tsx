@@ -1,5 +1,6 @@
 "use client";
-import { Wallet as WalletIcon, Check } from "lucide-react";
+import { Check } from "lucide-react";
+import { BrandLogo } from "./components/brand-logo";
 import { Auth } from "./components/auth";
 import { Modal } from "./components/primitives";
 import { TransactionForm } from "./components/transaction-form";
@@ -26,7 +27,7 @@ export default function Home() {
     return (
       <main className={`phone-shell loading ${appStyleScopes}`} role="status">
         <span className="brand-mark">
-          <WalletIcon size={29} />
+          <BrandLogo variant="white" size={58} />
         </span>
         <h2>Opening your wallet</h2>
         <div className="loading-bar" />

@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useId, useRef, type ReactNode } from "react";
-import { ArrowLeft, Info, Wallet } from "lucide-react";
+import { ArrowLeft, Info } from "lucide-react";
+import { BrandLogo } from "./brand-logo";
 
 export type Save = (action: string, data: unknown) => Promise<void>;
 
@@ -89,7 +90,7 @@ export function Empty({ title, children }: EmptyProps) {
   return (
     <div className="empty">
       <span className="empty-icon">
-        <Wallet size={25} />
+        <BrandLogo size={54} />
       </span>
       <h3>{title}</h3>
       <div>{children}</div>

@@ -29,6 +29,8 @@ export function AccountCard({
   const amount = (n: number) => (hidden ? "••••" : currency(n));
 
   if (compact) {
+    const isCreditCard = account.type === "card";
+    const displayedAmount = isCreditCard ? availableBalance(wallet, account) : b;
     return (
       <button type="button" onClick={onSelect}
         className={`${styles.card} relative isolate flex w-full flex-col overflow-hidden rounded-[25px] border p-4 text-left`}>
@@ -43,7 +45,8 @@ export function AccountCard({
           <ChevronRight size={17} className="text-[var(--muted)]" aria-hidden />
         </span>
         <strong className="my-2.5 block w-full text-[24px] leading-tight tracking-tight [overflow-wrap:anywhere]">
-          {amount(b)}
+          {isCreditCard && <span className="sr-only">Available credit: </span>}
+          {amount(displayedAmount)}
         </strong>
         <span className="mt-auto self-start rounded-full bg-[var(--soft)] px-2 py-0.5 text-[10px] font-semibold text-[var(--blue)]">
           {labels[account.type]}

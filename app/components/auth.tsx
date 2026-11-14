@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
-import { Wallet, ArrowRight, ShieldCheck, WalletCards } from "lucide-react";
+import { ArrowRight, ShieldCheck } from "lucide-react";
+import { BrandLogo } from "./brand-logo";
 import { Field } from "./primitives";
 import { authStyleScopes } from "../styles/scopes";
 
@@ -48,7 +49,7 @@ export function Auth({ onDone }: AuthProps) {
     <main className={`phone-shell auth-shell ${authStyleScopes}`}>
       <div className="auth-brand">
         <span className="brand-mark small">
-          <Wallet size={22} />
+          <BrandLogo size={42} />
         </span>
         DigiWallet<span>.</span>
       </div>
@@ -56,7 +57,9 @@ export function Auth({ onDone }: AuthProps) {
       <div className="auth-art" aria-hidden="true">
         <div className="art-card back" />
         <div className="art-card front">
-          <WalletCards size={28} />
+          <div className="shrink-0 overflow-hidden rounded-lg">
+            <BrandLogo variant="white" size={28} />
+          </div>
           <span>DigiWallet</span>
           <i />
           <strong>

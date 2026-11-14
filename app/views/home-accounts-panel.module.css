@@ -1,0 +1,56 @@
+.actions,
+.heading {
+  --accent: #064ccd;
+  --deep-blue: #062779;
+  --divider: #064ccd29;
+  --tint: #064ccd12;
+  font-family: Manrope, var(--font);
+  color: var(--deep-blue);
+  border-color: var(--divider);
+}
+
+.actions,
+.count {
+  border-color: var(--divider);
+}
+
+.action + .action {
+  border-inline-start: 1px solid var(--divider);
+}
+
+.action {
+  font-size: clamp(13px, 4.4vw, 16px);
+  font-weight: 700;
+  line-height: 1.3;
+  transition: background-color 150ms ease-in-out, color 150ms ease-in-out;
+}
+
+.count {
+  background-color: var(--tint);
+}
+
+.action:active {
+  background-color: #064ccd20;
+  color: var(--accent);
+}
+
+@media (hover: hover) {
+  .action:hover {
+    background-color: #064ccd20;
+    color: var(--accent);
+  }
+}
+
+.action svg,
+.seeAll {
+  color: var(--accent);
+}
+
+.seeAll {
+  font-size: clamp(10px, 4vw, 16px);
+  font-weight: 700;
+}
+
+.action:focus-visible {
+  outline-offset: -3px;
+}

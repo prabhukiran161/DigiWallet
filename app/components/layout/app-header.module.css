@@ -1,0 +1,34 @@
+.homeHeader {
+  --profile-ring: linear-gradient(145deg, #7ec0ff, #216ef7);
+  min-height: 98px;
+}
+
+.divider {
+  background: var(--profile-ring);
+}
+
+.profile {
+  border: 2.5px solid transparent;
+  background: linear-gradient(145deg, #e4edff, #d7e4fa) padding-box,
+    var(--profile-ring) border-box;
+  box-shadow: 0 4px 10px #2564dc26;
+  font-size: clamp(14px, 4.1vw, 18px);
+  font-weight: 700;
+  font-style: italic;
+}
+
+.headline {
+  width: fit-content;
+  max-width: 100%;
+  padding: 4px 8px;
+  border-radius: 12px;
+  background: #d1dffa;
+  color: #081849;
+  font-family: Inter, var(--font);
+  font-size: clamp(14px, 4.1vw, 18px);
+  font-weight: 800;
+  font-style: italic;
+  line-height: 1.15;
+  letter-spacing: -.045em;
+  text-wrap: balance;
+}
