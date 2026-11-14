@@ -120,7 +120,7 @@ export function apply(w: Wallet, c: Command) {
 
   switch (c.type) {
     case "income":
-      check(liquid(a), "Income requires a bank or cash account.");
+      check(liquid(a), "Inflow requires a bank or cash account.");
       pair(a.id, "system:income", amount);
       e.income = amount;
       break;

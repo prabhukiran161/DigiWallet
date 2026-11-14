@@ -1,4 +1,5 @@
 import postgres from "postgres";
+import { institutionLogoUrl } from "../institutions";
 import { readWallet, writeWallet, createRelationalWallet } from "./wallet-records";
 import type { Wallet } from "../ledger";
 import type { Store } from "./types";
@@ -97,26 +98,36 @@ export function openPostgresStore(
   };
 
   const getInstitutions = async () => {
-    const rows =
-      await sql`SELECT id, name, kind, country FROM dw_institutions WHERE active ORDER BY name`;
-    return rows as unknown as {
-      id: string;
-      name: string;
-      kind: string;
-      country: string;
-    }[];
+    const rows = await sql<{ id: string; name: string; kind: string; country: string; uploaded: boolean }[]>`
+      SELECT id, name, kind, country, logo_png IS NOT NULL AS uploaded
+      FROM dw_institutions WHERE active ORDER BY name
+    `;
+    return rows.map(({ uploaded, ...institution }) => ({
+      ...institution,
+      logoUrl: institutionLogoUrl(institution.id, uploaded),
+    }));
+  };
+
+  const getInstitutionLogo = async (id: string) => {
+    const [row] = await sql<{ logo_png: Uint8Array | null }[]>`
+      SELECT logo_png FROM dw_institutions WHERE id = ${id} AND active
+    `;
+    return row?.logo_png ?? undefined;
   };
 
   const addInstitution = async (
     name: string,
     kind: string,
     country: string,
+    logo?: Uint8Array,
   ) => {
-    await sql`
-      INSERT INTO dw_institutions (id, name, kind, country, normalized_name)
-      VALUES (${randomUUID()}, ${name}, ${kind}, ${country}, ${normalize(name)})
+    const rows = await sql`
+      INSERT INTO dw_institutions (id, name, kind, country, normalized_name, logo_png)
+      VALUES (${randomUUID()}, ${name}, ${kind}, ${country}, ${normalize(name)}, ${logo ?? null})
       ON CONFLICT (kind, country, normalized_name) DO NOTHING
+      RETURNING id
     `;
+    if (!rows.length) throw new Error("This institution is already in the catalog.");
   };
 
   return {
@@ -129,6 +140,7 @@ export function openPostgresStore(
     logout: logoutUser,
     limit: limitAttempts,
     getInstitutions,
+    getInstitutionLogo,
     addInstitution,
     close: async () => {
       await sql.end();

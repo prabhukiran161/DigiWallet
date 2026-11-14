@@ -20,7 +20,6 @@ export function CategoryManager({ wallet, save }: CategoryManagerProps) {
   const [confirm, setConfirm] = useState(false);
 
   const category = wallet.categories.find((c) => c.id === selected);
-  const used = Boolean(category && categoryUsed(wallet, category.id));
 
   async function submit(action: string, data: unknown) {
     setError("");
@@ -87,7 +86,6 @@ export function CategoryManager({ wallet, save }: CategoryManagerProps) {
                 id: category?.id || crypto.randomUUID(),
                 name,
                 icon,
-                archived: category?.archived || false,
               });
             }}
           >
@@ -96,7 +94,6 @@ export function CategoryManager({ wallet, save }: CategoryManagerProps) {
                 required
                 maxLength={50}
                 value={name}
-                readOnly={used}
                 onChange={(e) => setName(e.target.value)}
               />
             </Field>
@@ -112,7 +109,7 @@ export function CategoryManager({ wallet, save }: CategoryManagerProps) {
                     title={i}
                     aria-pressed={icon === i}
                     className={icon === i ? "selected" : ""}
-                    disabled={used}
+                    disabled={busy}
                     onClick={() => setIcon(i)}
                   >
                     <CategoryIcon category={i} size={22} />
@@ -121,50 +118,44 @@ export function CategoryManager({ wallet, save }: CategoryManagerProps) {
               </div>
             </fieldset>
 
-            {used ? (
-              <p className="notice">
-                This category has transactions. Its name and icon are locked;
-                you can archive it.
-              </p>
-            ) : (
-              <button className="primary full" disabled={busy}>
-                <Check size={17} />
-                {category ? "Save changes" : "Create category"}
-              </button>
-            )}
+            <button className="primary full" disabled={busy}>
+              <Check size={17} />
+              {category ? "Save changes" : "Create category"}
+            </button>
           </form>
 
           {category && (
             <>
-              <button
-                className="secondary full"
-                disabled={busy}
-                onClick={() =>
-                  void submit("category", {
-                    id: category.id,
-                    archived: !category.archived,
-                  })
-                }
-              >
-                <Archive size={17} />
-                {category.archived ? "Restore category" : "Archive category"}
-              </button>
-
-              {!used && !category.system && (
+              {category.archived ? (
+                <button
+                  className="secondary full"
+                  disabled={busy}
+                  onClick={() =>
+                    void submit("category", {
+                      id: category.id,
+                      archived: false,
+                    })
+                  }
+                >
+                  <Archive size={17} />
+                  Restore category
+                </button>
+              ) : (
                 <button
                   className="text-button danger"
+                  disabled={busy}
                   onClick={() => setConfirm(true)}
                 >
                   <Trash2 size={16} />
-                  Delete unused category
+                  Delete category
                 </button>
               )}
 
               {confirm && (
                 <div className="inset">
                   <p>
-                    Delete this unused category? Categories referenced by
-                    budgets must be archived instead.
+                    Delete {category.name}? It will stay on past transactions
+                    and be removed from the picker for new transactions.
                   </p>
                   <button
                     className="secondary"

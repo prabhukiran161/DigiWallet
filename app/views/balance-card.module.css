@@ -1,0 +1,72 @@
+.card {
+  min-height: 234px;
+  background: radial-gradient(ellipse at 0 0, #4bb0ff 0, transparent 60%),
+    linear-gradient(145deg, #2889ff, #064ccd 56%, #062779);
+  box-shadow: 0 13px 24px #1759c545, inset 0 0 0 1px #ffffffb8;
+}
+
+.waves {
+  transform: translateY(-8px);
+  opacity: .57;
+  background:
+    radial-gradient(ellipse at 88% 50%, #43b9ff, #1e7bfa 33%, transparent 68%),
+    linear-gradient(160deg, #1b62d7, #1355bf);
+  clip-path: ellipse(39% 22% at 94% 35%);
+  clip-path: shape(
+    from 43% 48%,
+    curve to 100% 8% with 70% 48% / 80% 13%,
+    line to 100% 49%,
+    curve to 43% 48% with 80% 34% / 68% 50%,
+    close
+  );
+}
+
+.waves::before,
+.waves::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+}
+
+.waves::before {
+  background: linear-gradient(172deg, #5dceff 26%, #2b9fff 37%, #1265f2 49%);
+  clip-path: shape(
+    from 43% 48%,
+    curve to 100% 28% with 65% 47% / 77% 24%,
+    line to 100% 49%,
+    curve to 43% 48% with 80% 34% / 68% 50%,
+    close
+  );
+}
+
+.waves::after {
+  background: linear-gradient(90deg, transparent 55%, #6bdcffaa 85%, #6bdcff55);
+  clip-path: shape(
+    from 43% 48%,
+    curve to 100% 28% with 65% 47% / 77% 24%,
+    line to 100% 28.5%,
+    curve to 43% 48% with 77% 24.5% / 65% 47.5%,
+    close
+  );
+}
+
+.sheen {
+  opacity: .65;
+  background: linear-gradient(145deg, #99deff69, transparent 78%);
+  clip-path: ellipse(69% 84% at -17% -43%);
+}
+
+.highlightText {
+  font-family: Inter, var(--font);
+  text-shadow: 0 2px 5px #08275b80;
+}
+
+.flow {
+  font-family: Inter, var(--font);
+  background: linear-gradient(145deg, #8bc9ff58, #74a9ff30);
+  box-shadow: inset 0 1px 0 #ffffff19;
+}
+
+.flowIcon {
+  background: linear-gradient(145deg, #8bd5ff, #2b91ef);
+}

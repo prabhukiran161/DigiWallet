@@ -12,9 +12,13 @@ export const categoryIcons = [
   "gift",
   "fuel",
   "fitness",
-  "coffee",
   "pets",
   "phone",
+  "users",
+  "bike",
+  "groceries",
+  "growth",
+  "savings",
 ] as const;
 
 export type CategoryIconName = (typeof categoryIcons)[number];

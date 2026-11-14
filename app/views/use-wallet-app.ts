@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { localDate, upgradeWallet, type Wallet, type EventType } from "@/lib/ledger";
-import type { Institution } from "../components/account-form";
+import type { Institution } from "@/lib/institutions";
 import type { View, AccountFilter } from "./types";
 
 export function useWalletApp() {
@@ -86,8 +86,8 @@ export function useWalletApp() {
   async function save(action: string, data: unknown) {
     const res = await fetch("/api/wallet", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ action, data }),
+      headers: data instanceof FormData ? undefined : { "Content-Type": "application/json" },
+      body: data instanceof FormData ? data : JSON.stringify({ action, data }),
     });
     const text = await res.text().catch(() => "");
     let result: {

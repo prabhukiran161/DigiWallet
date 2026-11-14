@@ -1,0 +1,106 @@
+dialog.dialog {
+  width: min(100%, 460px);
+  height: min(940px, calc(100dvh - 24px));
+  max-width: none;
+  max-height: 100dvh;
+  margin: auto;
+  border: 1px solid var(--line);
+  border-radius: 28px;
+  background: #fbfcff;
+  overflow: auto;
+  scrollbar-width: none;
+}
+
+.dialog::-webkit-scrollbar {
+  display: none;
+}
+
+.dialog :global(.modal-head) {
+  border-bottom: 0;
+  background: #fbfcff;
+}
+
+dialog.dialog :global(.modal-content) {
+  display: flex;
+  flex-direction: column;
+  min-height: calc(100% - 72px);
+  padding: 10px 22px 0;
+}
+
+.form :global(.field),
+.form :global(.category-picker) {
+  margin-bottom: 13px;
+  gap: 5px;
+}
+
+.form :global(.field-label),
+.form :global(.category-picker legend) {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.form :global(.category-picker button) {
+  min-height: 33px;
+  padding-block: 5px;
+  border-radius: 14px;
+}
+
+.amount input,
+.amount input:focus-visible {
+  min-height: 56px;
+  padding: 0;
+  border: 0;
+  outline: none;
+  background: transparent;
+  box-shadow: none;
+  color: var(--ink);
+  font-size: clamp(24px, 8vw, 44px);
+  font-weight: 600;
+  text-align: center;
+}
+
+.amount:focus-within :global(.field-label) {
+  color: var(--blue);
+}
+
+.amount input::placeholder {
+  color: #9aaccd;
+}
+
+.form :global(.field) > input,
+.form :global(.field select) {
+  min-height: 43px;
+}
+
+.form .amount :global(.field) > input {
+  min-height: 56px;
+}
+
+.account {
+  position: relative;
+  display: block;
+}
+
+.account select {
+  padding-inline-start: 46px;
+}
+
+.footer {
+  position: sticky;
+  bottom: 0;
+  margin-top: auto;
+  padding: 12px 0 max(18px, env(safe-area-inset-bottom));
+  background: #fbfcff;
+  z-index: 3;
+}
+
+@media (max-width: 480px) {
+  dialog.dialog {
+    height: 100dvh;
+    border-radius: 0;
+  }
+
+  dialog.dialog :global(.modal-content) {
+    padding-inline: 16px;
+  }
+}

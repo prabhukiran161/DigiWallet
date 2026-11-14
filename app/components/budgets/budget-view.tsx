@@ -5,6 +5,7 @@ import { localDate, type Wallet } from "@/lib/ledger";
 import { currency, decimal } from "@/lib/display";
 import { Field, Modal, InfoNote, type Save } from "../primitives";
 import { CategoryIcon } from "../category-icon";
+import { AmountInput } from "../amount-input";
 
 interface BudgetViewProps {
   wallet: Wallet;
@@ -179,11 +180,10 @@ export function BudgetView({ wallet, month, save }: BudgetViewProps) {
           <form onSubmit={handleSaveBudget}>
             <div className="amount-entry">
               <Field label="Monthly limit (₹)">
-                <input
+                <AmountInput
                   name="total"
                   required
-                  defaultValue={decimal(budget?.total || 0)}
-                  inputMode="decimal"
+                  defaultValue={budget ? decimal(budget.total) : ""}
                 />
               </Field>
             </div>
@@ -197,10 +197,9 @@ export function BudgetView({ wallet, month, save }: BudgetViewProps) {
                     <CategoryIcon category={c.id} wallet={wallet} />
                   </span>
                   <Field label={`${c.name}${c.archived ? " (archived)" : ""} (₹)`}>
-                    <input
+                    <AmountInput
                       name={c.id}
-                      inputMode="decimal"
-                      defaultValue={decimal(budget?.categories[c.id] || 0)}
+                      defaultValue={budget?.categories[c.id] ? decimal(budget.categories[c.id]) : ""}
                       aria-describedby={
                         c.archived ? "archived-budget-note" : undefined
                       }

@@ -8,9 +8,10 @@ interface ModalProps {
   title: string;
   children: ReactNode;
   onClose: () => void;
+  className?: string;
 }
 
-export function Modal({ title, children, onClose }: ModalProps) {
+export function Modal({ title, children, onClose, className }: ModalProps) {
   const ref = useRef<HTMLDialogElement>(null);
   const id = useId();
 
@@ -28,7 +29,7 @@ export function Modal({ title, children, onClose }: ModalProps) {
   }, []);
 
   return (
-    <dialog ref={ref} aria-labelledby={id} onCancel={onClose}>
+    <dialog ref={ref} aria-labelledby={id} onCancel={onClose} className={className}>
       <header className="modal-head">
         <button
           type="button"

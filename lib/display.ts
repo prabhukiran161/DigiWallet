@@ -22,7 +22,7 @@ export const labels: Record<string, string> = {
   investment: "Investment",
   loan: "Borrowed money",
   receivable: "Money lent",
-  income: "Income",
+  income: "Inflow",
   expense: "Expense",
   borrow: "Borrowed money",
   transfer: "Transfer",

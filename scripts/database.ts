@@ -17,6 +17,8 @@ try {
     const file=resolve('database/schema.sql');
     const body=await readFile(file,'utf8');
     const checksum=createHash('sha256').update(body).digest('hex');
+    const logos=await readFile(resolve('database/002_institution_logos.sql'),'utf8');
+    const logosChecksum=createHash('sha256').update(logos).digest('hex');
     await sql.begin(async tx=>{
       await tx`SELECT pg_advisory_xact_lock(71904123)`;
       await tx.unsafe('SET LOCAL search_path TO public');
@@ -26,14 +28,25 @@ try {
       }
       else {
         const exists=await tx`SELECT to_regclass('public.dw_users') AS present`;
-        if(exists[0].present)throw new Error('DigiWallet schema already exists. Use the explicit development reset if it contains no data.');
+        if(exists[0].present) {
+          const applied=await tx`SELECT checksum FROM dw_schema_migrations WHERE name='002_institution_logos'`;
+          if (applied[0]) {
+            if (applied[0].checksum !== logosChecksum) throw new Error('Institution logo migration checksum mismatch.');
+            return;
+          }
+          await tx.unsafe(logos);
+          await tx`INSERT INTO dw_schema_migrations(name,checksum) VALUES('002_institution_logos',${logosChecksum})`;
+          return;
+        }
         const legacy=await tx`SELECT to_regclass('public.users') AS present`;
         if(legacy[0].present)throw new Error('Old DigiWallet tables exist. Inspect data and use the explicit development reset.');
       }
       await tx.unsafe(body);
       await tx`INSERT INTO dw_schema_migrations(name,checksum) VALUES('001_initial',${checksum})`;
+      await tx.unsafe(logos);
+      await tx`INSERT INTO dw_schema_migrations(name,checksum) VALUES('002_institution_logos',${logosChecksum})`;
     });
-    console.log(command==='reset'?'DigiWallet-owned tables reset and new schema created.':'New DigiWallet schema created.');
+    console.log(command==='reset'?'DigiWallet-owned tables reset and new schema created.':'DigiWallet migrations are up to date.');
   } else if (command === 'status') {
     const tables=await sql`SELECT tablename FROM pg_tables WHERE schemaname='public' AND tablename LIKE 'dw_%' ORDER BY tablename`;
     const counts=await sql`SELECT (SELECT count(*)::int FROM dw_users) users,(SELECT count(*)::int FROM dw_wallets) wallets,(SELECT count(*)::int FROM dw_accounts) accounts,(SELECT count(*)::int FROM dw_transactions) transactions`;

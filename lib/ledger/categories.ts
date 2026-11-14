@@ -1,6 +1,5 @@
 import type { Wallet } from "./types";
 import { check } from "./money";
-import { categoryUsed } from "./queries";
 import { categoryIcons } from "../category-options";
 import { management, upgradeWallet } from "./wallet";
 
@@ -11,20 +10,12 @@ export function manageCategory(
 ): Wallet {
   const w = upgradeWallet(source),
     c = w.categories.find((c) => c.id === input.id);
-  const used = categoryUsed(w, input.id);
 
   if (remove) {
     check(c, "Category not found.");
-    check(!c.system, "Predefined categories can be archived, not deleted.");
-    check(!used, "Categories with transactions can only be archived.");
-    check(
-      !Object.values(w.budgets).some((b) =>
-        Object.hasOwn(b.categories, input.id),
-      ),
-      "This category is referenced by a budget. Archive it to preserve history.",
-    );
+    if (c.archived) return w;
     management(w, "deleteCategory", input.id, c);
-    w.categories = w.categories.filter((c) => c.id !== input.id);
+    c.archived = true;
     return w;
   }
 
@@ -37,10 +28,6 @@ export function manageCategory(
   check(
     categoryIcons.includes(icon as never),
     "Choose a predefined category icon.",
-  );
-  check(
-    !c || !used || (name === c.name && icon === c.icon),
-    "Categories with transactions cannot be renamed or have their icon changed.",
   );
 
   if (c) {

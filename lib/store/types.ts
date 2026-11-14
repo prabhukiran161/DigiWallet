@@ -1,4 +1,5 @@
 import type { Wallet } from "../ledger";
+import type { Institution } from "../institutions";
 
 export interface Store {
   read(user: string): Promise<Wallet>;
@@ -18,10 +19,9 @@ export interface Store {
   ): Promise<{ id: string; name: string; email: string } | undefined>;
   logout(token: string): Promise<void>;
   limit(key: string, max?: number): Promise<void>;
-  getInstitutions(): Promise<
-    { id: string; name: string; kind: string; country: string }[]
-  >;
-  addInstitution(name: string, kind: string, country: string): Promise<void>;
+  getInstitutions(): Promise<Institution[]>;
+  getInstitutionLogo(id: string): Promise<Uint8Array | undefined>;
+  addInstitution(name: string, kind: string, country: string, logo?: Uint8Array): Promise<void>;
   close(): Promise<void>;
 }
 

@@ -10,7 +10,11 @@ import {
   Plus,
   ChartNoAxesCombined,
   ChevronRight,
+  ArrowDown,
+  ArrowUp,
+  Lock,
 } from "lucide-react";
+import balanceStyles from "./balance-card.module.css";
 import { summary, type Wallet, type EventType } from "@/lib/ledger";
 import { currency } from "@/lib/display";
 import { Empty, InfoNote, type Save } from "../components/primitives";
@@ -50,11 +54,14 @@ export function HomeView({
 
   return (
     <>
-      <section className="balance-card">
-        <div className="balance-label">
-          <span>Available balance</span>
+      <section aria-label="Wallet balance" className={`${balanceStyles.card} relative isolate flex flex-col justify-center overflow-hidden rounded-[25px] px-5 py-5 text-white`}>
+        <div aria-hidden="true" className={`${balanceStyles.sheen} pointer-events-none absolute inset-0 -z-10`} />
+        <div aria-hidden="true" className={`${balanceStyles.waves} pointer-events-none absolute inset-0 -z-10`} />
+        <div className="flex items-center gap-2 text-sm font-semibold">
+          <span className={`${balanceStyles.highlightText} text-[15px] font-semibold`}>Available balance</span>
           <button
-            className="balance-eye"
+            type="button"
+            className="grid size-8 place-items-center rounded-full bg-white/15"
             onClick={onToggleHidden}
             aria-label={hidden ? "Show balances" : "Hide balances"}
             aria-pressed={hidden}
@@ -62,21 +69,29 @@ export function HomeView({
             {hidden ? <EyeOff size={17} /> : <Eye size={17} />}
           </button>
         </div>
-        <strong className="hero-amount">{amount(s.available)}</strong>
-        <span className="balance-caption">Bank + cash</span>
-        <div className="balance-rule" />
-        <div className="balance-secondary">
-          <div>
-            <span>Net worth</span>
-            <strong>{amount(s.netWorth)}</strong>
-          </div>
-          <div>
-            <span>Reserved</span>
-            <strong>{amount(s.reserved)}</strong>
-          </div>
-          <span className="card-symbol" aria-hidden="true">
-            <WalletCards size={29} />
-          </span>
+        <strong className={`${balanceStyles.highlightText} mt-1 block text-[clamp(27px,8vw,40px)] leading-tight font-extrabold tracking-tight [overflow-wrap:anywhere]`}>{amount(s.available)}</strong>
+        <div className="mt-3 grid grid-cols-2 gap-2" role="group" aria-label="Selected month cash flow">
+          {([{ label: "Inflow", value: s.inflow, Icon: ArrowDown }, { label: "Outflow", value: s.outflow, Icon: ArrowUp }]).map(({ label, value, Icon }) => (
+            <div key={label} className={`${balanceStyles.flow} flex min-w-0 items-center gap-2.5 rounded-2xl px-2 py-1.5`}>
+              <span className={`${balanceStyles.flowIcon} grid size-7 shrink-0 place-items-center rounded-full`}>
+                <Icon size={18} aria-hidden />
+              </span>
+              <span className="min-w-0 text-[clamp(12px,3.3vw,14px)] leading-tight font-semibold [overflow-wrap:anywhere]">
+                {label} <strong className="inline-block max-w-full font-bold">{amount(value)}</strong>
+              </span>
+            </div>
+          ))}
+        </div>
+        <div className="mt-3 grid grid-cols-2 divide-x divide-white/35 border-t border-white/35 pt-3">
+          {([{ label: "Net worth", value: s.netWorth, Icon: ChartNoAxesCombined }, { label: "Reserved", value: s.reserved, Icon: Lock }]).map(({ label, value, Icon }) => (
+            <div key={label} className="flex min-w-0 items-center gap-2 px-2">
+              <Icon size={22} aria-hidden />
+              <span className="min-w-0 text-[11px] leading-tight">
+                {label}
+                <strong className="mt-1 block text-base leading-tight font-bold [overflow-wrap:anywhere]">{amount(value)}</strong>
+              </span>
+            </div>
+          ))}
         </div>
       </section>
 
@@ -114,7 +129,7 @@ export function HomeView({
 
       <div className="section-head">
         <h2>
-          My accounts <span className="count">{active.length}</span>
+          My Accounts <span className="count">{active.length}</span>
         </h2>
         <button
           className="text-button"

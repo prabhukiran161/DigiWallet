@@ -1,0 +1,54 @@
+.carousel {
+  --card-width: min(72cqw, 248px);
+  container-type: inline-size;
+  margin-inline: -16px;
+  margin-bottom: 12px;
+}
+
+.viewport {
+  gap: 8px;
+  padding: 10px calc((100% - var(--card-width)) / 2) 18px;
+  scrollbar-width: none;
+}
+
+.viewport::-webkit-scrollbar {
+  display: none;
+}
+
+.slide {
+  width: var(--card-width);
+}
+
+.card {
+  min-height: 154px;
+  border-color: #d6e7ff;
+  background: radial-gradient(ellipse at 100% 0%, #eaf2ff, transparent 72%), #fff;
+  box-shadow: 0 9px 18px #326ed024;
+  transition: transform .2s ease, opacity .2s ease;
+}
+
+.card::before,
+.card::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: auto -24px -48px auto;
+  width: 176px;
+  height: 102px;
+  border-radius: 70% 40% 0 0;
+  background: #d4e6ff99;
+  transform: rotate(-20deg);
+  pointer-events: none;
+}
+
+.card::after {
+  right: -53px;
+  bottom: -32px;
+  background: #bdd8fa66;
+  transform: rotate(-37deg);
+}
+
+.slide[data-active="false"] .card {
+  transform: scale(.91);
+  opacity: .66;
+}

@@ -15,7 +15,10 @@ test('normalized PostgreSQL schema, targeted account writes, ledger rules and ro
  try {
   await admin`CREATE SCHEMA ${admin(schema)}`;
   const sql=postgres(url!,{max:1,prepare:false,onnotice:()=>{},connection:{search_path:schema}});
-  try {await sql.unsafe(await readFile(resolve('database/schema.sql'),'utf8'));} finally {await sql.end();}
+  try {
+    await sql.unsafe(await readFile(resolve('database/schema.sql'),'utf8'));
+    await sql.unsafe(await readFile(resolve('database/002_institution_logos.sql'),'utf8'));
+  } finally {await sql.end();}
   store=openPostgresStore(url!,{schema});const s=store;
   const u=await s.register('test@example.test','long-test-password','Test');
   const other=await s.register('other@example.test','long-test-password','Other');

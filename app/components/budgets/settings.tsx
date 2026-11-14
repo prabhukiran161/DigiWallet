@@ -146,10 +146,7 @@ export function Settings({ wallet, save, month }: SettingsProps) {
             <form
               onSubmit={(e) => {
                 e.preventDefault();
-                void submit("institution", {
-                  ...Object.fromEntries(new FormData(e.currentTarget)),
-                  country: "IN",
-                });
+                void submit("institution", new FormData(e.currentTarget));
               }}
             >
               <Field label="Institution name">
@@ -168,9 +165,11 @@ export function Settings({ wallet, save, month }: SettingsProps) {
                   <option value="lender">Lender</option>
                 </select>
               </Field>
+              <Field label="Institution logo (optional)" hint="PNG, JPEG, or WebP, up to 1 MB.">
+                <input name="logo" type="file" accept="image/png,image/jpeg,image/webp" />
+              </Field>
               <InfoNote label="Shared catalog">
-                Institution names are shared. Your accounts and balances remain
-                private. Logos are not yet supported.
+                Institution names and logos are shared with DigiWallet users.
               </InfoNote>
               <button className="primary full" disabled={busy}>
                 Add institution

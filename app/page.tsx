@@ -16,6 +16,8 @@ import {
   SettingsView,
 } from "./views";
 import { appStyleScopes } from "./styles/scopes";
+import { InstitutionCatalog } from "./components/institution-brand";
+import transactionStyles from "./components/transaction-form/transaction-form.module.css";
 
 export default function Home() {
   const app = useWalletApp();
@@ -59,6 +61,7 @@ export default function Home() {
 
   return (
     <div className={`phone-shell ${appStyleScopes}`}>
+      <InstitutionCatalog.Provider value={app.institutions}>
       <a className="skip-link" href="#main">
         Skip to content
       </a>
@@ -145,6 +148,7 @@ export default function Home() {
 
       {app.modal && (
         <Modal
+          className={app.modal === "transaction" ? transactionStyles.dialog : undefined}
           title={app.modal === "transaction" ? "New transaction" : "Add account"}
           onClose={() => app.setModal("")}
         >
@@ -157,13 +161,13 @@ export default function Home() {
             />
           ) : (
             <AccountForm
-              institutions={app.institutions}
               save={app.save}
               onDone={() => app.setModal("")}
             />
           )}
         </Modal>
       )}
+      </InstitutionCatalog.Provider>
     </div>
   );
 }

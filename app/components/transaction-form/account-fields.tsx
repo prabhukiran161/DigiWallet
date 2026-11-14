@@ -4,6 +4,10 @@ import { availableBalance } from "@/lib/ledger";
 import { currency } from "@/lib/display";
 import { Field, InfoNote } from "../primitives";
 import { TARGET_TYPES } from "./types";
+import { findInstitution } from "@/lib/institutions";
+import { InstitutionMark, useInstitutionCatalog } from "../institution-brand";
+import { Landmark } from "lucide-react";
+import styles from "./transaction-form.module.css";
 
 interface AccountFieldsProps {
   type: EventType;
@@ -30,10 +34,17 @@ export function AccountFields({
 }: AccountFieldsProps) {
   const isReceiving = ["borrow", "income", "receive", "refund", "capitalReturn"].includes(type);
   const optionalTarget = type === "borrow" || type === "lend";
+  const catalog = useInstitutionCatalog();
+  const selected = accounts.find((entry) => entry.id === account);
+  const institution = selected && findInstitution(catalog, selected.institution, selected.type);
 
   return (
     <>
       <Field label={isReceiving ? "Receiving account" : "Payment account"}>
+        <span className={styles.account}>
+          <span aria-hidden="true" className="pointer-events-none absolute inset-y-0 left-3 flex items-center text-[var(--blue)]">
+            <InstitutionMark src={institution?.logoUrl}><Landmark size={19} /></InstitutionMark>
+          </span>
         <select
           value={account}
           required
@@ -48,6 +59,7 @@ export function AccountFields({
             </option>
           ))}
         </select>
+        </span>
       </Field>
 
       {TARGET_TYPES[type] && (

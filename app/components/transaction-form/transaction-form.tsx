@@ -1,18 +1,37 @@
 "use client";
-import { ArrowRight, ArrowDownLeft, ArrowUpRight } from "lucide-react";
-import { labels } from "@/lib/display";
+import {
+  ArrowRight,
+  ArrowDownLeft,
+  ArrowUpRight,
+  CalendarDays,
+  ChevronDown,
+} from "lucide-react";
 import type { EventType } from "@/lib/ledger";
 import { Field } from "../primitives";
+import { AmountInput } from "../amount-input";
+import styles from "./transaction-form.module.css";
 import { CREDIT_TYPES, DEBIT_TYPES, type TransactionFormProps } from "./types";
 import { ReviewScreen } from "./review-screen";
 import { AccountFields } from "./account-fields";
 import { LoanFunding } from "./loan-funding";
 import { CategoryPicker } from "./category-picker";
 import { useTransactionForm } from "./use-transaction-form";
+import { TransactionTypePicker } from "./transaction-type-picker";
 
 export function TransactionForm(props: TransactionFormProps) {
   const { wallet, editing } = props;
   const form = useTransactionForm(props);
+  const transactionTypes =
+    form.direction === "credit" ? CREDIT_TYPES : DEBIT_TYPES;
+
+  function selectType(type: EventType) {
+    form.setType(type);
+    form.set("target", "");
+    form.set("allocation", "");
+    form.set("loanFunding", "");
+    form.set("funding", "own");
+    form.set("original", "");
+  }
 
   const input = (
     key: string,
@@ -20,11 +39,19 @@ export function TransactionForm(props: TransactionFormProps) {
     inputProps: React.InputHTMLAttributes<HTMLInputElement> = {},
   ) => (
     <Field label={label}>
-      <input
-        value={form.data[key] || ""}
-        onChange={(e) => form.set(key, e.target.value)}
-        {...inputProps}
-      />
+      {inputProps.inputMode === "decimal" ? (
+        <AmountInput
+          required={inputProps.required}
+          value={form.data[key] || ""}
+          onValueChange={(value) => form.set(key, value)}
+        />
+      ) : (
+        <input
+          value={form.data[key] || ""}
+          onChange={(e) => form.set(key, e.target.value)}
+          {...inputProps}
+        />
+      )}
     </Field>
   );
 
@@ -48,6 +75,7 @@ export function TransactionForm(props: TransactionFormProps) {
 
   return (
     <form
+      className={`${styles.form} flex flex-1 flex-col`}
       onSubmit={(e) => {
         e.preventDefault();
         if (!form.preview) {
@@ -58,20 +86,16 @@ export function TransactionForm(props: TransactionFormProps) {
         form.setReview(true);
       }}
     >
-      <div className="segmented">
+      <div className="mb-4 flex gap-1 rounded-2xl bg-[var(--soft)] p-1">
         {["debit", "credit"].map((d) => (
           <button
             type="button"
             key={d}
             aria-pressed={form.direction === d}
-            className={form.direction === d ? "selected" : ""}
+            className={`flex min-h-9 flex-1 items-center justify-center gap-2 rounded-xl font-semibold aria-pressed:bg-white aria-pressed:text-[var(--blue)] aria-pressed:shadow-sm ${form.direction === d ? "" : "text-[var(--muted)]"}`}
             onClick={() => {
               form.setDirection(d);
-              form.setType(d === "debit" ? "expense" : "income");
-              form.set("target", "");
-              form.set("allocation", "");
-              form.set("loanFunding", "");
-              form.set("funding", "own");
+              selectType(d === "debit" ? "expense" : "income");
             }}
           >
             {d === "debit" ? (
@@ -89,7 +113,16 @@ export function TransactionForm(props: TransactionFormProps) {
         ))}
       </div>
 
-      <div className="amount-entry">
+      <TransactionTypePicker
+        key={form.direction}
+        types={transactionTypes}
+        selected={form.type}
+        onSelect={selectType}
+      />
+
+      <div
+        className={`${styles.amount} mb-3 mt-5 border-b border-[var(--line)] pb-3 text-center`}
+      >
         {input(
           "amount",
           ["repay", "receive"].includes(form.type)
@@ -99,30 +132,9 @@ export function TransactionForm(props: TransactionFormProps) {
             required: true,
             inputMode: "decimal",
             placeholder: "0.00",
-            pattern: "[0-9]+(\\.[0-9]{1,2})?",
           },
         )}
       </div>
-
-      <Field label="Transaction type">
-        <select
-          value={form.type}
-          onChange={(e) => {
-            form.setType(e.target.value as EventType);
-            form.set("target", "");
-            form.set("allocation", "");
-            form.set("loanFunding", "");
-            form.set("funding", "own");
-            form.set("original", "");
-          }}
-        >
-          {(form.direction === "credit" ? CREDIT_TYPES : DEBIT_TYPES).map((t) => (
-            <option key={t} value={t}>
-              {labels[t]}
-            </option>
-          ))}
-        </select>
-      </Field>
 
       <AccountFields
         type={form.type}
@@ -149,7 +161,9 @@ export function TransactionForm(props: TransactionFormProps) {
         usesLoan={form.usesLoan}
         loanIds={form.loanIds}
         loan={form.loan}
-        onSetReturnUnused={(checked) => form.set("returnUnused", checked ? "yes" : "no")}
+        onSetReturnUnused={(checked) =>
+          form.set("returnUnused", checked ? "yes" : "no")
+        }
         onSetFunding={(funding) => form.set("funding", funding)}
         onSetLoan={(loanId) => form.set("loanFunding", loanId)}
         renderInput={input}
@@ -172,21 +186,41 @@ export function TransactionForm(props: TransactionFormProps) {
         placeholder: "What was this for?",
       })}
 
-      <details className="disclosure">
-        <summary>Date, notes & more</summary>
-        {input("date", "Date and time (device local)", {
-          type: "datetime-local",
-          required: true,
-        })}
-        {input("notes", "Notes", { maxLength: 2000, placeholder: "Optional" })}
-        {(form.type === "borrow" || form.type === "lend") && !form.target && (
-          <>
-            {input("dueDate", "Due date", { type: "date" })}
-            {input("terms", "Agreed interest / terms", {
-              placeholder: "Optional; entered manually",
-            })}
-          </>
-        )}
+      <details className="group mb-4 rounded-2xl border border-[var(--line)] open:border-blue-200">
+        <summary className="flex cursor-pointer list-none items-center gap-3 rounded-2xl bg-[var(--soft)] p-2.5 [&::-webkit-details-marker]:hidden">
+          <span className="grid size-9 shrink-0 place-items-center rounded-xl bg-blue-100 text-[var(--blue)]">
+            <CalendarDays size={19} aria-hidden />
+          </span>
+          <span className="flex-1">
+            <strong className="block">Date, notes &amp; more</strong>
+            <small className="text-[var(--muted)]">
+              Add date, time and additional notes
+            </small>
+          </span>
+          <ChevronDown
+            size={17}
+            className="group-open:rotate-180"
+            aria-hidden
+          />
+        </summary>
+        <div className="px-3 pt-3">
+          {input("date", "Date and time (device local)", {
+            type: "datetime-local",
+            required: true,
+          })}
+          {input("notes", "Notes", {
+            maxLength: 2000,
+            placeholder: "Optional",
+          })}
+          {(form.type === "borrow" || form.type === "lend") && !form.target && (
+            <>
+              {input("dueDate", "Due date", { type: "date" })}
+              {input("terms", "Agreed interest / terms", {
+                placeholder: "Optional; entered manually",
+              })}
+            </>
+          )}
+        </div>
       </details>
 
       {(form.error || form.previewError) && (
@@ -201,7 +235,7 @@ export function TransactionForm(props: TransactionFormProps) {
         </p>
       )}
 
-      <div className="form-footer">
+      <div className={styles.footer}>
         <button className="primary full" disabled={!form.preview}>
           Review transaction
           <ArrowRight size={18} />
@@ -210,4 +244,3 @@ export function TransactionForm(props: TransactionFormProps) {
     </form>
   );
 }
-

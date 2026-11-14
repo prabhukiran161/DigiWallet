@@ -15,11 +15,17 @@ import {
   Coffee,
   PawPrint,
   Smartphone,
+  UsersRound,
+  Motorbike,
+  ShoppingCart,
+  Sprout,
+  PiggyBank,
 } from "lucide-react";
 import type { Wallet } from "@/lib/ledger";
 
 const CATEGORY_ICONS = {
   food: Utensils,
+  users: UsersRound,
   transport: Car,
   shopping: ShoppingBag,
   bills: Receipt,
@@ -35,6 +41,10 @@ const CATEGORY_ICONS = {
   coffee: Coffee,
   pets: PawPrint,
   phone: Smartphone,
+  bike: Motorbike,
+  groceries: ShoppingCart,
+  growth: Sprout,
+  savings: PiggyBank,
 } as const;
 
 interface CategoryIconProps {
@@ -48,7 +58,8 @@ export function CategoryIcon({
   size = 19,
   wallet,
 }: CategoryIconProps) {
-  const key = wallet?.categories.find((c) => c.id === category)?.icon || category;
+  const key =
+    wallet?.categories.find((c) => c.id === category)?.icon || category;
   const Icon = CATEGORY_ICONS[key as keyof typeof CATEGORY_ICONS] || Shapes;
   return <Icon size={size} />;
 }

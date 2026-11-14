@@ -19,13 +19,9 @@ import {
 } from "@/lib/ledger";
 import { nowLocal, decimal, currency } from "@/lib/display";
 import { Field, InfoNote, type Save } from "./primitives";
-
-export interface Institution {
-  id: string;
-  name: string;
-  kind: string;
-  country: string;
-}
+import { useInstitutionCatalog } from "./institution-brand";
+import { InstitutionPicker } from "./institution-picker";
+import { AmountInput } from "./amount-input";
 
 const ACCOUNT_TYPES = [
   { id: "bank", label: "Bank", icon: Landmark },
@@ -44,7 +40,6 @@ function localInput(date: string) {
 }
 
 interface AccountFormProps {
-  institutions?: Institution[];
   save: Save;
   onDone: () => void;
   account?: Account;
@@ -52,18 +47,18 @@ interface AccountFormProps {
 }
 
 export function AccountForm({
-  institutions = [],
   save,
   onDone,
   account,
   wallet,
 }: AccountFormProps) {
+  const catalog = useInstitutionCatalog();
   const [type, setType] = useState<AccountType>(account?.type || "bank");
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
-  const [limit, setLimit] = useState(decimal(account?.limit || 0));
+  const [limit, setLimit] = useState(account?.limit ? decimal(account.limit) : "");
   const [available, setAvailable] = useState(
-    decimal((account?.limit || 0) - (account?.opening || 0)),
+    account ? decimal(account.limit - account.opening) : "",
   );
 
   const locked = Boolean(account && wallet && accountHasActivity(wallet, account.id));
@@ -132,44 +127,24 @@ export function AccountForm({
       </Field>
 
       {type !== "cash" && (
-        <Field
-          label="Institution / provider"
-          hint={
-            institutionLocked
-              ? "Institution editing is locked after 24 hours."
-              : undefined
-          }
-        >
-          <input
-            name="institution"
-            defaultValue={account?.institution}
-            disabled={institutionLocked}
-            list="institutions"
-          />
-          <datalist id="institutions">
-            {institutions.map((i) => (
-              <option key={i.id} value={i.name} />
-            ))}
-          </datalist>
-        </Field>
+        <InstitutionPicker key={type} type={type} catalog={catalog}
+          initial={account?.institution} disabled={institutionLocked} />
       )}
 
       {type === "card" && !locked ? (
         <>
           <Field label="Total credit limit (₹)">
-            <input
+            <AmountInput
               required
-              inputMode="decimal"
               value={limit}
-              onChange={(e) => setLimit(e.target.value)}
+              onValueChange={setLimit}
             />
           </Field>
           <Field label="Currently available credit (₹)">
-            <input
+            <AmountInput
               required
-              inputMode="decimal"
               value={available}
-              onChange={(e) => setAvailable(e.target.value)}
+              onValueChange={setAvailable}
             />
           </Field>
           <div className="metric-pair">
@@ -185,12 +160,10 @@ export function AccountForm({
               : "Opening balance (₹)"
           }
         >
-          <input
+          <AmountInput
             name="opening"
-            defaultValue={decimal(account?.opening || 0)}
-            required
+            defaultValue={account ? decimal(account.opening) : ""}
             readOnly={locked}
-            inputMode="decimal"
           />
         </Field>
       )}

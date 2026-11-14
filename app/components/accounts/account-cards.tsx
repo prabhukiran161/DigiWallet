@@ -3,6 +3,7 @@ import { useState } from "react";
 import type { AccountCardsProps } from "./types";
 import { AccountCard } from "./account-card";
 import { AccountDetailModal } from "./account-detail-modal";
+import { HomeAccountCarousel } from "./home-account-carousel";
 
 export function AccountCards({
   wallet,
@@ -18,17 +19,21 @@ export function AccountCards({
 
   return (
     <>
-      <div className={compact ? "account-strip" : "account-stack"}>
-        {accounts.map((a) => (
-          <AccountCard
-            key={a.id}
-            account={a}
-            wallet={wallet}
-            hidden={hidden}
-            onSelect={() => setSelected(a.id)}
-          />
-        ))}
-      </div>
+      {compact ? (
+        <HomeAccountCarousel accounts={accounts} wallet={wallet} hidden={hidden} onSelect={setSelected} />
+      ) : (
+        <div className="account-stack">
+          {accounts.map((a) => (
+            <AccountCard
+              key={a.id}
+              account={a}
+              wallet={wallet}
+              hidden={hidden}
+              onSelect={() => setSelected(a.id)}
+            />
+          ))}
+        </div>
+      )}
 
       {detail && (
         <AccountDetailModal

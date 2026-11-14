@@ -3,6 +3,7 @@ import { Archive } from "lucide-react";
 import { accountHasActivity, type Account, type Wallet } from "@/lib/ledger";
 import { nowLocal } from "@/lib/display";
 import { Field, type Save } from "../primitives";
+import { AmountInput } from "../amount-input";
 
 interface AccountSettingsProps {
   account: Account;
@@ -89,7 +90,7 @@ export function AccountSettings({
           {limitEditor && (
             <form onSubmit={handleSaveLimit}>
               <Field label="New total limit (₹)">
-                <input name="limit" inputMode="decimal" required />
+                <AmountInput name="limit" required />
               </Field>
               <Field label="Effective date and time">
                 <input
