@@ -1,0 +1,137 @@
+/* Scoped to DigiWallet's app shell;
+  keep feature rules in this module. */ .scope :global(.chips) {
+  display:flex;
+  gap:8px;
+  overflow:auto;
+  scrollbar-width:none;
+  margin:0 -22px 22px;
+  padding:2px 22px
+}
+.scope :global(.chips button) {
+  border:1px solid var(--line);
+  border-radius:23px;
+  white-space:nowrap;
+  background:white;
+  color:#6a7890;
+  min-height:42px;
+  padding:8px 16px;
+  font-size:12px
+}
+.scope :global(.chips button.selected) {
+  background:var(--blue);
+  border-color:var(--blue);
+  color:white;
+  box-shadow:0 3px 10px #2463eb1c
+}
+.scope :global(.section-total) {
+  text-align:center;
+  padding:15px 0 26px
+}
+.scope :global(.section-total>span) {
+  color:var(--muted);
+  font-size:12px
+}
+.scope :global(.section-total>strong) {
+  display:block;
+  font-size:32px;
+  letter-spacing:-1px;
+  margin:7px 0 16px;
+  overflow-wrap:anywhere
+}
+.scope :global(.detail-summary) {
+  background:radial-gradient(ellipse at 100% 0%,#d3e3ff,transparent 85%),linear-gradient(135deg,#eef5ff,#f5f8ff);
+  border:1px solid #e3ecfc;
+  border-radius:22px;
+  padding:25px;
+  margin-bottom:20px
+}
+.scope :global(.detail-summary>span) {
+  display:block;
+  font-size:11px;
+  color:#6a84ac
+}
+.scope :global(.detail-summary>strong) {
+  display:block;
+  font-size:32px;
+  letter-spacing:-1px;
+  margin:7px 0 12px;
+  overflow-wrap:anywhere
+}
+.scope :global(.detail-summary .purpose-pill) {
+  display:inline-block;
+  background:#fff9;
+  border-radius:12px;
+  padding:4px 10px;
+  font-size:10px;
+  margin-top:10px
+}
+.scope :global(.due-row) {
+  display:flex;
+  justify-content:space-between;
+  font-size:11px;
+  color:var(--muted);
+  margin-bottom:15px
+}
+.scope :global(.overdue) {
+  color:#b75959;
+  background:#fff0ee;
+  border-radius:10px;
+  padding:2px 8px
+}
+.scope :global(.allocation) {
+  border:1px solid var(--line);
+  border-radius:19px;
+  padding:17px;
+  margin:20px 0
+}
+.scope :global(.allocation .section-head) {
+  margin:0 0 17px
+}
+.scope :global(.allocation-hero>span) {
+  font-size:11px;
+  color:var(--muted)
+}
+.scope :global(.allocation-hero strong) {
+  font-size:25px;
+  display:block;
+  margin-top:5px;
+  letter-spacing:-.7px;
+  overflow-wrap:anywhere
+}
+.scope :global(.allocation .metric-pair) {
+  padding:12px 0
+}
+.scope :global(.allocation .metric-pair strong) {
+  font-size:15px
+}
+.scope :global(.allocation dl) {
+  margin:10px 0
+}
+.scope :global(.allocation dl>div) {
+  display:flex;
+  justify-content:space-between;
+  gap:12px;
+  padding:5px 0
+}
+.scope :global(.allocation dd) {
+  margin:0;
+  text-align:right
+}
+.scope :global(.history-tabs) {
+  margin-top:20px
+}
+@media (max-width:360px) {
+  .scope :global(.chips) {
+  margin-left:-16px;
+  margin-right:-16px;
+  padding-left:16px;
+  padding-right:16px
+}
+
+}
+.scope :global(.management-actions) {
+  display:flex;
+  gap:16px;
+  flex-wrap:wrap
+}
+

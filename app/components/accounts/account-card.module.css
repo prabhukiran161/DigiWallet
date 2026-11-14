@@ -1,0 +1,128 @@
+/* Scoped to DigiWallet's app shell;
+  keep feature rules in this module. */ .scope :global(.account-strip) {
+  display:flex;
+  gap:12px;
+  overflow-x:auto;
+  margin:0 -22px;
+  padding:0 22px 10px;
+  scroll-snap-type:x mandatory;
+  scrollbar-width:none
+}
+.scope :global(.account-strip::-webkit-scrollbar) {
+  display:none
+}
+.scope :global(.account-stack) {
+  display:flex;
+  flex-direction:column;
+  gap:16px;
+  margin-bottom:22px
+}
+.scope :global(.account-card) {
+  position:relative;
+  isolation:isolate;
+  overflow:hidden;
+  display:block;
+  border:1px solid #dfe8f7;
+  border-radius:22px;
+  padding:20px;
+  background:radial-gradient(ellipse at 90% 0%,#dce9ff95,transparent 80%),linear-gradient(145deg,#fff,#f1f6ff);
+  text-align:left;
+  scroll-snap-align:center;
+  color:var(--ink)
+}
+.scope :global(.account-strip .account-card) {
+  flex:0 0 246px;
+  min-width:0;
+  padding:17px 18px
+}
+.scope :global(.account-card:hover) {
+  border-color:#aac5f7;
+  box-shadow:0 6px 15px #3973c90a
+}
+.scope :global(.account-top) {
+  display:flex;
+  align-items:center;
+  gap:8px;
+  margin-bottom:20px;
+  font-size:10px;
+  color:#587297;
+  min-width:0
+}
+.scope :global(.account-top>span:nth-child(2)) {
+  flex:1;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap
+}
+.scope :global(.account-logo) {
+  display:grid;
+  place-items:center;
+  width:33px;
+  height:33px;
+  background:#fff9;
+  color:#3567bc;
+  border-radius:11px;
+  border:1px solid #fff;
+  flex-shrink:0
+}
+.scope :global(.account-card h3) {
+  font-size:14px;
+  font-weight:600;
+  margin-bottom:11px;
+  overflow-wrap:anywhere
+}
+.scope :global(.account-label) {
+  display:block;
+  color:#6e7e99;
+  font-size:10px
+}
+.scope :global(.account-amount) {
+  font-size:25px;
+  letter-spacing:-.8px;
+  font-weight:600;
+  margin:3px 0 0;
+  display:block;
+  overflow-wrap:anywhere
+}
+.scope :global(.account-foot) {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  font-size:10px;
+  color:#6680a4;
+  margin-top:18px;
+  padding-top:12px;
+  border-top:1px solid #dce6f4
+}
+.scope :global(.account-foot strong) {
+  font-weight:500;
+  color:#35598d;
+  text-align:right;
+  overflow-wrap:anywhere
+}
+.scope :global(.account-loan) {
+  background:linear-gradient(135deg,#f5f8ff,#eaf0fd)
+}
+.scope :global(.account-card.account-card) {
+  transition:border-color .2s,box-shadow .2s
+}
+.scope :global(.account-cash) {
+  background:linear-gradient(135deg,#fff,#eff8f8)
+}
+.scope :global(.account-investment) {
+  background:linear-gradient(135deg,#fff,#eef0ff)
+}
+.scope :global(.account-receivable) {
+  background:linear-gradient(135deg,#fff,#eef8f7)
+}
+@media (max-width:360px) {
+  .scope :global(.account-strip) {
+  margin-left:-16px;
+  margin-right:-16px;
+  padding-left:16px;
+  padding-right:16px
+}
+
+}
+

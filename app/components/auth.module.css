@@ -1,0 +1,148 @@
+/* Scoped to DigiWallet's app shell;
+  keep feature rules in this module. */ .scope:global(.auth-shell) {
+  padding:27px 26px 30px;
+  background:radial-gradient(ellipse at 95% 0%,#dce9ff,transparent 46%),linear-gradient(#f8fbff,#fff 56%)
+}
+.scope :global(.auth-brand) {
+  display:flex;
+  align-items:center;
+  gap:10px;
+  font-size:20px;
+  font-weight:600;
+  letter-spacing:-.7px
+}
+.scope :global(.auth-brand>span:last-child) {
+  color:var(--blue);
+  margin-left:-9px
+}
+.scope :global(.auth-art) {
+  height:235px;
+  position:relative;
+  max-width:330px;
+  margin:24px auto 0;
+  isolation:isolate
+}
+.scope :global(.art-card) {
+  width:245px;
+  height:156px;
+  position:absolute;
+  border-radius:21px;
+  box-shadow:0 15px 35px #275bce25;
+  border:1px solid #ffffff80
+}
+.scope :global(.art-card.back) {
+  background:linear-gradient(120deg,#d4e4ff,#a3c1ff);
+  left:47px;
+  top:18px;
+  transform:rotate(11deg)
+}
+.scope :global(.art-card.front) {
+  background:radial-gradient(ellipse at 85% 0%,#a5cdff,transparent 70%),linear-gradient(130deg,#5e9cfa,#2356d5);
+  left:22px;
+  top:35px;
+  transform:rotate(-9deg);
+  color:white;
+  padding:18px;
+  display:flex;
+  gap:7px;
+  align-items:flex-start
+}
+.scope :global(.art-card.front>span) {
+  font-size:11px;
+  padding-top:5px;
+  font-weight:600
+}
+.scope :global(.art-card.front>strong) {
+  font-size:17px;
+  position:absolute;
+  left:20px;
+  bottom:19px;
+  line-height:1.35;
+  letter-spacing:-.5px
+}
+.scope :global(.art-card.front>i) {
+  position:absolute;
+  width:92px;
+  height:92px;
+  border:1px solid #ffffff26;
+  border-radius:50%;
+  right:0;
+  bottom:0;
+  box-shadow:0 0 0 15px #ffffff06
+}
+.scope :global(.art-circles) {
+  position:absolute;
+  right:19px;
+  bottom:20px;
+  display:flex
+}
+.scope :global(.art-circles i) {
+  display:block;
+  width:24px;
+  height:24px;
+  border-radius:50%;
+  background:#fff8
+}
+.scope :global(.art-circles i+i) {
+  margin-left:-10px;
+  background:#fff5
+}
+.scope :global(.art-orb) {
+  position:absolute;
+  width:40px;
+  height:40px;
+  background:radial-gradient(circle at 30% 25%,#fff,#b4cfff 60%,#719eea);
+  border-radius:50%;
+  bottom:24px;
+  right:10px;
+  box-shadow:0 7px 16px #2c61c223
+}
+.scope :global(.auth-form h1) {
+  font-size:27px;
+  letter-spacing:-.9px
+}
+.scope :global(.auth-form>p) {
+  font-size:12px;
+  color:var(--muted);
+  margin:8px 0 25px
+}
+.scope :global(.auth-form .field) {
+  margin-bottom:15px
+}
+.scope :global(.auth-form .primary) {
+  margin-top:7px
+}
+.scope :global(.auth-switch) {
+  display:block;
+  width:100%;
+  border:0;
+  background:none;
+  color:#8a98ad;
+  font-size:11px;
+  min-height:50px;
+  margin-top:8px
+}
+.scope :global(.auth-switch strong) {
+  color:var(--blue);
+  font-weight:600
+}
+.scope :global(.auth-trust) {
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  gap:5px;
+  font-size:10px;
+  color:#8e9db2;
+  margin-top:16px
+}
+@media (max-width:360px) {
+  .scope:global(.auth-shell) {
+  padding:24px 20px
+}
+.scope :global(.auth-art) {
+  transform:scale(.9);
+  margin-left:-5px
+}
+
+}
+

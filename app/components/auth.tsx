@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { Wallet, ArrowRight, ShieldCheck, WalletCards } from "lucide-react";
 import { Field } from "./primitives";
+import { authStyleScopes } from "../styles/scopes";
 
 interface AuthProps {
   onDone: () => void;
@@ -44,7 +45,7 @@ export function Auth({ onDone }: AuthProps) {
   }
 
   return (
-    <main className="phone-shell auth-shell">
+    <main className={`phone-shell auth-shell ${authStyleScopes}`}>
       <div className="auth-brand">
         <span className="brand-mark small">
           <Wallet size={22} />

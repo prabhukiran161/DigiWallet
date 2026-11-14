@@ -1,0 +1,60 @@
+/* Scoped to DigiWallet's app shell;
+  keep feature rules in this module. */ .scope :global(.category-edit) {
+  display:flex;
+  align-items:flex-start;
+  gap:10px;
+  padding:14px 0;
+  border-bottom:1px solid var(--line)
+}
+.scope :global(.category-editor) {
+  flex:1;
+  min-width:0
+}
+.scope :global(.category-editor input) {
+  padding:9px 11px;
+  min-height:41px;
+  font-size:12px
+}
+.scope :global(.category-editor .text-button) {
+  min-height:29px;
+  font-size:10px
+}
+.scope :global(.category-edit .icon-button) {
+  border:0;
+  background:#eef4ff;
+  color:#4e78bb;
+  width:35px;
+  height:39px
+}
+.scope :global(.new-category) {
+  margin-top:25px
+}
+.scope :global(.icon-picker) {
+  display:grid!important;
+  grid-template-columns:repeat(4,1fr);
+  gap:9px
+}
+.scope :global(.icon-picker button) {
+  min-height:48px;
+  justify-content:center
+}
+.scope :global(.category-manage-row) {
+  width:100%;
+  display:flex;
+  align-items:center;
+  gap:13px;
+  border:0;
+  border-bottom:1px solid var(--line);
+  background:#fff;
+  text-align:left;
+  padding:14px 0
+}
+.scope :global(.category-manage-row small) {
+  display:block;
+  font-size:11px;
+  color:var(--muted)
+}
+.scope :global(.category-management) {
+  margin-bottom:22px
+}
+

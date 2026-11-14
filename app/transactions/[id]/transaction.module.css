@@ -1,0 +1,92 @@
+/* Scoped to DigiWallet's app shell;
+  keep feature rules in this module. */ .scope :global(.transaction-receipt) {
+  text-align:center;
+  padding:12px 4px 25px
+}
+.scope :global(.receipt-icon) {
+  display:grid;
+  place-items:center;
+  margin:0 auto 16px;
+  width:64px;
+  height:64px;
+  border-radius:22px;
+  color:var(--blue);
+  background:#eaf2ff
+}
+.scope :global(.receipt-amount) {
+  display:block;
+  font-size:33px;
+  margin:14px 0;
+  letter-spacing:-1px;
+  overflow-wrap:anywhere
+}
+.scope :global(.transaction-receipt h2) {
+  font-size:18px;
+  line-height:1.5;
+  overflow-wrap:anywhere
+}
+.scope :global(.transaction-receipt p) {
+  color:var(--muted);
+  font-size:12px;
+  margin-top:10px
+}
+.scope :global(.receipt-fields) {
+  margin:22px 0
+}
+.scope :global(.receipt-fields>div) {
+  display:flex;
+  justify-content:space-between;
+  gap:20px;
+  padding:14px 0;
+  border-bottom:1px solid var(--line);
+  font-size:12px
+}
+.scope :global(.receipt-balances>div) {
+  display:flex;
+  justify-content:space-between;
+  gap:20px;
+  padding:14px 0;
+  border-bottom:1px solid var(--line);
+  font-size:12px
+}
+.scope :global(.receipt-fields dt) {
+  color:var(--muted);
+  flex:0 0 34%;
+  overflow-wrap:anywhere
+}
+.scope :global(.receipt-fields dd) {
+  margin:0;
+  text-align:right;
+  overflow-wrap:anywhere;
+  min-width:0
+}
+.scope :global(.receipt-balances small) {
+  display:block;
+  color:var(--muted);
+  font-size:10px;
+  margin-top:3px
+}
+.scope :global(.receipt-balances strong) {
+  overflow-wrap:anywhere;
+  max-width:48%
+}
+.scope :global(.record-id) {
+  overflow-wrap:anywhere;
+  font-size:11px
+}
+.scope :global(.revision-record) {
+  padding:12px 0
+}
+.scope :global(.revision-record>strong) {
+  font-size:12px
+}
+.scope:global(.transaction-page) :global(.mobile-content) {
+  padding-bottom:40px
+}
+@media (max-width:360px) {
+  .scope :global(.receipt-amount) {
+  font-size:28px
+}
+
+}
+

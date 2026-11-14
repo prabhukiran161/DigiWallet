@@ -15,13 +15,14 @@ import {
   BudgetView,
   SettingsView,
 } from "./views";
+import { appStyleScopes } from "./styles/scopes";
 
 export default function Home() {
   const app = useWalletApp();
 
   if (app.loading) {
     return (
-      <main className="phone-shell loading" role="status">
+      <main className={`phone-shell loading ${appStyleScopes}`} role="status">
         <span className="brand-mark">
           <WalletIcon size={29} />
         </span>
@@ -33,7 +34,7 @@ export default function Home() {
 
   if (app.error) {
     return (
-      <main className="phone-shell loading">
+      <main className={`phone-shell loading ${appStyleScopes}`}>
         <p role="alert">{app.error}</p>
         <button className="primary" onClick={() => void app.load()}>
           Try again
@@ -57,7 +58,7 @@ export default function Home() {
   );
 
   return (
-    <div className="phone-shell">
+    <div className={`phone-shell ${appStyleScopes}`}>
       <a className="skip-link" href="#main">
         Skip to content
       </a>

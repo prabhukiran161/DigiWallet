@@ -1,0 +1,102 @@
+/* Scoped to DigiWallet's app shell;
+  keep feature rules in this module. */ .scope :global(.profile-card) {
+  text-align:center;
+  padding:13px 0 30px
+}
+.scope :global(.profile-card .avatar) {
+  margin:0 auto 13px
+}
+.scope :global(.profile-card h2) {
+  font-size:21px;
+  margin-bottom:9px
+}
+.scope :global(.settings-list) {
+  border:1px solid var(--line);
+  border-radius:22px;
+  overflow:hidden;
+  background:white
+}
+.scope :global(.settings-list>button) {
+  display:flex;
+  align-items:center;
+  gap:12px;
+  text-align:left;
+  width:100%;
+  border:0;
+  border-bottom:1px solid var(--line);
+  background:none;
+  padding:18px 15px;
+  color:var(--ink)
+}
+.scope :global(.settings-list>a) {
+  display:flex;
+  align-items:center;
+  gap:12px;
+  text-align:left;
+  width:100%;
+  border:0;
+  border-bottom:1px solid var(--line);
+  background:none;
+  padding:18px 15px;
+  color:var(--ink)
+}
+.scope :global(.settings-static) {
+  display:flex;
+  align-items:center;
+  gap:12px;
+  text-align:left;
+  width:100%;
+  border:0;
+  border-bottom:1px solid var(--line);
+  background:none;
+  padding:18px 15px;
+  color:var(--ink)
+}
+.scope :global(.settings-list>:last-child) {
+  border-bottom:0
+}
+.scope :global(.settings-list>button:hover) {
+  background:#f7faff
+}
+.scope :global(.settings-list>a:hover) {
+  background:#f7faff
+}
+.scope :global(.settings-icon) {
+  display:grid;
+  place-items:center;
+  background:#eef4ff;
+  color:#4b77bd;
+  width:38px;
+  height:38px;
+  border-radius:13px
+}
+.scope :global(.settings-list>*>span:nth-child(2)) {
+  flex:1;
+  font-size:12px;
+  font-weight:500
+}
+.scope :global(.settings-list small) {
+  display:block;
+  color:#8390a5;
+  font-size:10px;
+  margin-top:4px;
+  font-weight:400
+}
+.scope :global(.settings-list>*>svg) {
+  color:#94a5bd
+}
+.scope :global(.logout-button) {
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:9px;
+  width:100%;
+  min-height:48px;
+  margin-top:24px;
+  border:0;
+  border-radius:15px;
+  background:#eef3fb;
+  color:#547297;
+  font-size:12px
+}
+

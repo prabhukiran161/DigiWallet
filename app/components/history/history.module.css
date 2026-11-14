@@ -1,0 +1,475 @@
+/* Scoped to DigiWallet's app shell;
+  keep feature rules in this module. */
+.scope :global(.activity-section) {
+  margin-bottom: 23px
+}
+
+.scope :global(.activity-section>.section-head) {
+  margin-top: 0
+}
+
+.scope :global(.history-list) {
+  background: #fff
+}
+
+.scope :global(.history-item) {
+  border-bottom: 1px solid #eef2f9
+}
+
+.scope :global(.history-item:last-child) {
+  border-bottom: 0
+}
+
+.scope :global(.transaction-row) {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  width: 100%;
+  padding: 16px 0;
+  border: 0;
+  background: none;
+  text-align: left;
+  min-height: 75px
+}
+
+.scope :global(.transaction-icon) {
+  display: grid;
+  place-items: center;
+  width: 41px;
+  height: 41px;
+  border-radius: 14px;
+  background: #eff2f8;
+  color: #6a7c98;
+  flex-shrink: 0
+}
+
+.scope :global(.transaction-icon.income) {
+  background: #e9f6f0;
+  color: #288965
+}
+
+.scope :global(.transaction-icon.transfer) {
+  background: #eaf0fc;
+  color: #4d75bd
+}
+
+.scope :global(.category-food) {
+  background: #fff3e7;
+  color: #c4883d
+}
+
+.scope :global(.category-transport) {
+  background: #edf2ff;
+  color: #617ad0
+}
+
+.scope :global(.category-shopping) {
+  background: #fff0f3;
+  color: #c16e8b
+}
+
+.scope :global(.category-bills) {
+  background: #e8f5fb;
+  color: #408eaf
+}
+
+.scope :global(.transaction-description) {
+  flex: 1;
+  min-width: 0
+}
+
+.scope :global(.transaction-description strong) {
+  display: block;
+  font-size: 12px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: 600
+}
+
+.scope :global(.transaction-description small) {
+  display: block;
+  font-size: 10px;
+  color: #7f8ba2;
+  margin-top: 5px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap
+}
+
+.scope :global(.transaction-value) {
+  text-align: right;
+  max-width: 44%;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  flex-shrink: 0
+}
+
+.scope :global(.transaction-value strong) {
+  font-size: 12px;
+  overflow-wrap: anywhere
+}
+
+.scope :global(.transaction-value svg) {
+  color: #96a4bc
+}
+
+.scope :global(.date-heading) {
+  color: #73829a;
+  font-size: 11px;
+  font-weight: 500;
+  padding: 16px 0 0
+}
+
+.scope :global(.transaction-detail) {
+  background: #f5f8fe;
+  border-radius: 14px;
+  padding: 15px;
+  margin-bottom: 12px;
+  font-size: 12px
+}
+
+.scope :global(.transaction-detail>div) {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 14px;
+  padding: 8px 0
+}
+
+.scope :global(.transaction-detail strong) {
+  overflow-wrap: anywhere;
+  text-align: right
+}
+
+.scope :global(.transaction-detail small) {
+  display: block;
+  font-size: 10px;
+  color: var(--muted)
+}
+
+.scope :global(.funding-tag) {
+  display: inline-block;
+  padding: 3px 8px;
+  border-radius: 10px;
+  background: #e5eeff;
+  color: #4168ab;
+  font-size: 10px;
+  margin-top: 8px
+}
+
+.scope :global(.record-meta) {
+  font-size: 11px;
+  margin-top: 12px;
+  color: #6a7b96
+}
+
+.scope :global(.record-meta summary) {
+  cursor: pointer;
+  padding: 8px 0;
+  min-height: 36px
+}
+
+.scope :global(.record-meta small) {
+  font-size: 10px;
+  overflow-wrap: anywhere
+}
+
+.scope :global(.search-row) {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 8px
+}
+
+.scope :global(.search) {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  flex: 1;
+  border: 1px solid #edf1f8;
+  background: #f5f7fc;
+  border-radius: 15px;
+  padding: 0 14px;
+  color: #8c9bb1
+}
+
+.scope :global(.search input) {
+  border: 0;
+  background: none;
+  box-shadow: none;
+  padding: 12px 0;
+  font-size: 12px;
+  min-height: 44px
+}
+
+.scope :global(.search input:focus-visible) {
+  outline-offset: 0
+}
+
+.scope :global(.filter-button) {
+  background: #f5f7fc;
+  position: relative;
+  width: 46px;
+  height: 46px;
+  border-color: #edf1f8
+}
+
+.scope :global(.filter-button.is-active) {
+  color: var(--blue);
+  background: #eaf1ff
+}
+
+.scope :global(.filter-button>span) {
+  position: absolute;
+  right: -2px;
+  top: -4px;
+  background: var(--blue);
+  color: white;
+  border-radius: 50%;
+  font-size: 9px;
+  min-width: 16px;
+  border: 2px solid white
+}
+
+.scope :global(.filter-panel) {
+  background: #f4f7fc;
+  padding: 15px;
+  border-radius: 16px;
+  margin: 10px 0
+}
+
+.scope :global(.filter-panel .field:last-of-type) {
+  margin-bottom: 4px
+}
+
+.scope :global(.day-chip) {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #eaf1ff;
+  color: #3568c5;
+  border: 0;
+  border-radius: 20px;
+  font-size: 11px;
+  padding: 8px 12px;
+  min-height: 38px;
+  margin: 12px 0
+}
+
+.scope :global(.panel) {
+  background: white;
+  border: 1px solid var(--line);
+  border-radius: 22px;
+  padding: 18px;
+  margin: 24px 0
+}
+
+.scope :global(.panel>.section-head) {
+  margin-top: 0
+}
+
+.scope :global(.heatmap) {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 5px
+}
+
+.scope :global(.weekday) {
+  text-align: center;
+  color: #8593aa;
+  font-size: 10px;
+  padding: 5px 0 9px
+}
+
+.scope :global(.heat) {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  border: 0;
+  border-radius: 9px;
+  min-width: 0;
+  aspect-ratio: 1;
+  font-size: 11px;
+  color: #526888
+}
+
+.scope :global(.heat small) {
+  position: absolute;
+  right: 3px;
+  top: 0;
+  font-size: 8px
+}
+
+.scope :global(.heat-0) {
+  background: #f1f5fb
+}
+
+.scope :global(.heat-1) {
+  background: #dce9ff
+}
+
+.scope :global(.heat-2) {
+  background: #aecbff
+}
+
+.scope :global(.heat-3) {
+  background: #598fea;
+  color: white
+}
+
+.scope :global(.heat-4) {
+  background: #235bcd;
+  color: white
+}
+
+.scope :global(.heat-refund) {
+  background: #e7f6ed;
+  color: #287457
+}
+
+.scope :global(.heat:hover) {
+  outline: 2px solid #5b91ed;
+  outline-offset: 1px
+}
+
+.scope :global(.heat-legend) {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 9px;
+  color: var(--muted);
+  margin-top: 16px
+}
+
+.scope :global(.heat-legend i) {
+  width: 11px;
+  height: 11px;
+  border-radius: 3px
+}
+
+.scope :global(.refund-key) {
+  margin-left: auto
+}
+
+.scope :global(.heatmap-panel .info-note) {
+  margin-bottom: 0
+}
+
+.scope :global(.swipe-row) {
+  position: relative;
+  overflow: hidden;
+  border-bottom: 1px solid var(--line);
+  border-radius: 0px;
+  background: #2463eb
+}
+
+.scope :global(.swipe-row .transaction-row) {
+  position: relative;
+  background: #ffffff;
+  touch-action: pan-y;
+  transition: transform .16s ease;
+  width: 100%;
+  margin: 0;
+  min-height: 80px;
+  align-items: center;
+  text-decoration: none;
+  padding: 4px 8px
+}
+
+.scope :global(.swipe-edit) {
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 76px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  gap: 5px;
+  font-size: 12px
+}
+
+.scope :global(.transaction-description) {
+  min-width: 0;
+  flex: 1
+}
+
+.scope :global(.transaction-description strong) {
+  display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%
+}
+
+.scope :global(.transaction-value) {
+  flex-shrink: 0;
+  max-width: 47%;
+  text-align: right
+}
+
+.scope :global(.transaction-value strong) {
+  font-size: 13px;
+  overflow-wrap: anywhere
+}
+
+.scope :global(.transaction-value small) {
+  display: block;
+  color: var(--muted);
+  font-size: 10px;
+  line-height: 1.5;
+  margin-top: 6px
+}
+
+.scope :global(.transaction-description>small) {
+  font-size: 10px
+}
+
+.scope :global(.category-tag) {
+  display: inline-block;
+  font-size: 9px;
+  color: #66748c;
+  background: #f2f5fa;
+  border: 1px solid #e9eef6;
+  border-radius: 10px;
+  padding: 1px 7px;
+  margin-top: 5px
+}
+
+.scope :global(.date-heading) {
+  background: #eff5ff;
+  border-radius: 10px;
+  padding: 10px 12px;
+  color: #38567c;
+  font-size: 12px
+}
+
+@media (max-width:360px) {
+  .scope :global(.swipe-row .transaction-row) {
+    gap: 8px;
+    padding-left: 3px;
+    padding-right: 3px
+  }
+
+  .scope :global(.transaction-value strong) {
+    font-size: 12px
+  }
+
+  .scope :global(.transaction-icon) {
+    width: 35px;
+    height: 35px
+  }
+
+}
+
+.scope :global(.transaction-value) {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0
+}

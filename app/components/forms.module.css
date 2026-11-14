@@ -1,0 +1,418 @@
+/* Scoped to DigiWallet's app shell;
+  keep feature rules in this module. */ .scope :global(.modal-head) {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  padding:17px 18px;
+  background:#fffffff5;
+  backdrop-filter:blur(15px);
+  border-bottom:1px solid #edf2fa;
+  position:sticky;
+  top:0;
+  z-index:5
+}
+.scope :global(.modal-head h2) {
+  font-size:17px;
+  text-align:center;
+  overflow-wrap:anywhere
+}
+.scope :global(.modal-head .icon-button) {
+  border:0;
+  background:#f3f6fc
+}
+.scope :global(.modal-content) {
+  padding:22px 22px max(22px,env(safe-area-inset-bottom))
+}
+.scope :global(.field) {
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+  margin-bottom:19px;
+  font-size:12px;
+  font-weight:500;
+  min-width:0
+}
+.scope :global(.field-label) {
+  color:#566781
+}
+.scope :global(.field small) {
+  font-size:10px;
+  color:var(--muted);
+  font-weight:400
+}
+.scope :global(.form-grid) {
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px
+}
+.scope :global(.segmented) {
+  display:flex;
+  gap:5px;
+  background:#f0f4fa;
+  border-radius:15px;
+  padding:5px;
+  margin-bottom:22px
+}
+.scope :global(.segmented button) {
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  gap:8px;
+  flex:1;
+  min-height:40px;
+  border:0;
+  border-radius:11px;
+  background:none;
+  color:#78879e;
+  font-size:13px
+}
+.scope :global(.segmented .selected) {
+  background:white;
+  color:var(--blue);
+  box-shadow:0 2px 7px #1838640d;
+  font-weight:600
+}
+.scope :global(.amount-entry) {
+  text-align:center;
+  margin:12px 0 27px;
+  padding:17px 0 21px;
+  border-bottom:1px solid var(--line)
+}
+.scope :global(.amount-entry .field) {
+  margin-bottom:0
+}
+.scope :global(.amount-entry .field-label) {
+  color:var(--muted);
+  font-size:11px
+}
+.scope :global(.amount-entry input) {
+  background:none;
+  border:0;
+  font-size:43px;
+  letter-spacing:-1.4px;
+  text-align:center;
+  font-weight:600;
+  padding:8px 0;
+  min-height:64px;
+  color:#1e3c70;
+  box-shadow:none;
+  border-radius:0
+}
+.scope :global(.amount-entry input::placeholder) {
+  color:#b8c7df
+}
+.scope :global(.small-amount input) {
+  font-size:35px
+}
+.scope :global(.inset) {
+  background:#f5f8ff;
+  border:1px solid #e8eefb;
+  border-radius:17px;
+  padding:17px;
+  margin:18px 0
+}
+.scope :global(.inset h3) {
+  margin-bottom:17px;
+  color:#385c95
+}
+.scope :global(.inset .field:last-child) {
+  margin-bottom:0
+}
+.scope :global(.check) {
+  display:flex;
+  align-items:flex-start;
+  gap:10px;
+  font-size:12px;
+  color:#4f637f;
+  margin:20px 0;
+  min-height:28px
+}
+.scope :global(.check input) {
+  width:18px;
+  height:18px;
+  min-height:18px;
+  accent-color:var(--blue);
+  flex-shrink:0;
+  margin:0;
+  border-radius:5px
+}
+.scope :global(.category-picker) {
+  margin:0 0 20px;
+  padding:0;
+  border:0;
+  min-width:0
+}
+.scope :global(.category-picker legend) {
+  font-size:12px;
+  font-weight:500;
+  color:#566781;
+  margin-bottom:10px
+}
+.scope :global(.category-picker>div) {
+  display:flex;
+  flex-wrap:wrap;
+  gap:7px
+}
+.scope :global(.category-picker button) {
+  border:1px solid var(--line);
+  background:#fff;
+  color:#708199;
+  border-radius:12px;
+  min-height:40px;
+  padding:8px 10px;
+  font-size:11px;
+  display:flex;
+  align-items:center;
+  gap:6px
+}
+.scope :global(.category-picker button.selected) {
+  background:#eaf1ff;
+  border-color:#bacff8;
+  color:var(--blue)
+}
+.scope :global(.disclosure) {
+  margin:20px 0;
+  font-size:12px;
+  border-top:1px solid var(--line)
+}
+.scope :global(.disclosure>summary) {
+  min-height:48px;
+  padding:15px 2px;
+  color:#5d7294;
+  font-weight:500;
+  cursor:pointer
+}
+.scope :global(.disclosure[open]>summary) {
+  margin-bottom:8px
+}
+.scope :global(.form-footer) {
+  position:sticky;
+  bottom:-22px;
+  padding:17px 0 max(17px,env(safe-area-inset-bottom));
+  background:linear-gradient(#ffffffd9,#fff 24%);
+  margin-top:14px;
+  z-index:3
+}
+.scope :global(.form-section-title) {
+  margin:8px 0 20px
+}
+.scope :global(.type-grid) {
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:9px;
+  margin:0 0 25px
+}
+.scope :global(.type-grid button) {
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:9px;
+  background:#f7f9fd;
+  border:1px solid #eaf0f9;
+  color:#7d90ae;
+  min-height:84px;
+  border-radius:16px;
+  font-size:10px
+}
+.scope :global(.type-grid button.selected) {
+  background:#eaf2ff;
+  border-color:#a8c5fc;
+  color:#2b67da;
+  box-shadow:0 2px 8px #2764eb0c
+}
+.scope :global(.review-heading) {
+  text-align:center;
+  padding:16px 0 22px
+}
+.scope :global(.review-icon) {
+  display:grid;
+  place-items:center;
+  width:60px;
+  height:60px;
+  border-radius:22px;
+  background:#edf4ff;
+  color:var(--blue);
+  margin:0 auto 15px
+}
+.scope :global(.review-heading h3) {
+  font-size:21px;
+  letter-spacing:-.5px
+}
+.scope :global(.review-heading p) {
+  font-size:12px;
+  color:var(--muted);
+  margin-top:7px;
+  overflow-wrap:anywhere
+}
+.scope :global(.review-meta) {
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+  font-size:11px;
+  color:#7385a0;
+  padding:10px 3px
+}
+.scope :global(.preview) {
+  background:#f6f9ff;
+  border:1px solid #e5edf9;
+  border-radius:20px;
+  padding:20px;
+  margin:6px 0 20px
+}
+.scope :global(.preview h3) {
+  font-size:11px;
+  text-transform:uppercase;
+  letter-spacing:1px;
+  color:#7a8eae;
+  margin-bottom:14px
+}
+.scope :global(.preview>div) {
+  display:flex;
+  justify-content:space-between;
+  gap:15px;
+  margin:15px 0;
+  font-size:12px
+}
+.scope :global(.preview>div:last-child) {
+  margin-bottom:0
+}
+.scope :global(.preview strong) {
+  text-align:right;
+  overflow-wrap:anywhere;
+  min-width:0;
+  max-width:55%
+}
+.scope :global(.preview span) {
+  max-width:55%;
+  overflow-wrap:anywhere
+}
+.scope :global(.preview-total) {
+  border-top:1px solid #dee7f6;
+  padding-top:17px
+}
+.scope :global(.error) {
+  padding:12px 14px;
+  border-radius:12px;
+  border:1px solid #f2d9d9;
+  background:#fff4f3;
+  color:#a14646;
+  font-size:12px;
+  margin:15px 0;
+  overflow-wrap:anywhere
+}
+.scope :global(.notice) {
+  background:#f1f6ff;
+  color:#4e6e9f;
+  border-radius:12px;
+  padding:13px;
+  font-size:12px;
+  margin:15px 0
+}
+.scope :global(.inline-success) {
+  display:flex;
+  align-items:center;
+  gap:8px;
+  color:#237a5b;
+  font-size:12px;
+  margin-top:15px
+}
+.scope :global(.info-note) {
+  font-size:11px;
+  color:#7d8da6;
+  margin:14px 0 22px
+}
+.scope :global(.info-note summary) {
+  display:flex;
+  align-items:center;
+  gap:6px;
+  cursor:pointer;
+  min-height:34px;
+  list-style:none;
+  font-size:10px
+}
+.scope :global(.info-note summary::-webkit-details-marker) {
+  display:none
+}
+.scope :global(.info-note p) {
+  background:#f6f9ff;
+  border-radius:12px;
+  padding:12px;
+  line-height:1.7;
+  margin-top:4px;
+  color:#617491
+}
+.scope :global(.empty) {
+  padding:26px 15px;
+  text-align:center;
+  border:1px dashed #dce7fa;
+  background:#fafcff;
+  border-radius:20px;
+  margin:8px 0 20px
+}
+.scope :global(.empty-icon) {
+  display:grid;
+  place-items:center;
+  width:54px;
+  height:54px;
+  background:#edf3ff;
+  color:#6f99e3;
+  border-radius:19px;
+  margin:0 auto 14px
+}
+.scope :global(.empty h3) {
+  font-size:14px;
+  color:#4c6385;
+  margin-bottom:6px
+}
+.scope :global(.empty p) {
+  font-size:12px;
+  color:var(--muted)
+}
+.scope :global(.empty button) {
+  margin-top:15px;
+  font-size:12px;
+  min-height:42px
+}
+@media (max-width:360px) {
+  .scope :global(.modal-content) {
+  padding:20px 16px
+}
+
+}
+.scope :global(.funding-choice) {
+  border:0;
+  padding:0;
+  margin:16px 0
+}
+.scope :global(.funding-choice legend) {
+  font-size:12px;
+  margin-bottom:7px
+}
+.scope :global(.funding-choice .segmented label) {
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  flex:1;
+  padding:10px;
+  cursor:pointer
+}
+.scope :global(.funding-choice input) {
+  width:16px;
+  min-height:16px;
+  accent-color:var(--blue)
+}
+.scope :global(.inset .primary) {
+  margin-top:12px;
+  margin-right:8px
+}
+.scope :global(.inset .secondary) {
+  margin-top:12px;
+  margin-right:8px
+}
+.scope :global(.disclosure .secondary.full) {
+  margin:10px 0
+}
+

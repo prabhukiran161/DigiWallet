@@ -7,6 +7,7 @@ import { TransactionForm } from "../../components/transaction-form";
 import { TransactionReceipt } from "./receipt";
 import { BalancesAfter } from "./balances-after";
 import { RevisionHistory } from "./revision-history";
+import { transactionStyleScopes } from "../../styles/scopes";
 
 export default function TransactionDetails() {
   const { id } = useParams<{ id: string }>();
@@ -79,7 +80,7 @@ export default function TransactionDetails() {
     });
 
   return (
-    <div className="phone-shell transaction-page">
+    <div className={`phone-shell transaction-page ${transactionStyleScopes}`}>
       <header className="app-header">
         <a className="icon-button" href={back} aria-label="Back to transactions">
           <ArrowLeft size={21} />

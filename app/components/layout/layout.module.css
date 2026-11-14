@@ -1,0 +1,235 @@
+/* Scoped to DigiWallet's app shell;
+  keep feature rules in this module. */ .scope:global(.phone-shell) {
+  width:100%;
+  max-width:440px;
+  min-height:100dvh;
+  margin:0 auto;
+  background:linear-gradient(180deg,#f7faff 0,#fff 400px);
+  position:relative;
+  box-shadow:0 0 65px #2147850a;
+  border-left:1px solid #fff;
+  border-right:1px solid #fff
+}
+.scope :global(.mobile-content) {
+  padding:0 22px 115px
+}
+.scope :global(.app-header) {
+  height:98px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:12px;
+  padding:22px 22px 18px
+}
+.scope :global(.app-header>h1) {
+  flex:1;
+  text-align:center;
+  font-size:19px;
+  overflow-wrap:anywhere
+}
+.scope :global(.greeting) {
+  display:flex;
+  align-items:center;
+  gap:11px;
+  min-width:0
+}
+.scope :global(.greeting .muted) {
+  font-size:12px;
+  display:block;
+  margin-bottom:3px
+}
+.scope :global(.greeting h1) {
+  font-size:19px;
+  white-space:nowrap
+}
+.scope :global(.greeting h1 span) {
+  color:var(--blue)
+}
+.scope :global(.brand-mark) {
+  display:grid;
+  place-items:center;
+  width:58px;
+  height:58px;
+  border-radius:19px;
+  background:linear-gradient(140deg,#70a2ff,#2968ef 55%,#1244b7);
+  color:white;
+  box-shadow:inset 0 1px 1px #fff9,0 8px 20px #2c68ed25
+}
+.scope :global(.brand-mark.small) {
+  width:42px;
+  height:42px;
+  border-radius:14px
+}
+.scope :global(.avatar) {
+  display:grid;
+  place-items:center;
+  background:linear-gradient(145deg,#dbeaff,#edf3ff);
+  color:#325b9c;
+  width:42px;
+  height:42px;
+  border:3px solid white;
+  border-radius:50%;
+  box-shadow:0 2px 10px #35589109;
+  flex-shrink:0;
+  font-size:14px;
+  font-weight:600
+}
+.scope :global(.avatar.large) {
+  width:70px;
+  height:70px;
+  font-size:25px
+}
+.scope :global(.skip-link) {
+  position:absolute;
+  left:15px;
+  top:-100px;
+  z-index:80;
+  background:white;
+  color:var(--blue);
+  padding:10px
+}
+.scope :global(.skip-link:focus) {
+  top:10px
+}
+.scope :global(.month-heading) {
+  margin-top:20px
+}
+.scope :global(.month-picker) {
+  display:flex;
+  align-items:center;
+  min-width:0;
+  gap:0
+}
+.scope :global(.month-picker button) {
+  padding:0;
+  width:25px;
+  height:40px;
+  border:0;
+  background:none;
+  color:#7a8ca8;
+  display:grid;
+  place-items:center
+}
+.scope :global(.month-picker input) {
+  width:130px;
+  padding:5px 0;
+  border:0;
+  background:none;
+  font-size:11px;
+  color:#50617b;
+  min-height:38px
+}
+.scope :global(.bottom-nav) {
+  position:fixed;
+  z-index:30;
+  bottom:0;
+  left:50%;
+  transform:translateX(-50%);
+  width:100%;
+  max-width:440px;
+  display:grid;
+  grid-template-columns:repeat(5,1fr);
+  align-items:center;
+  padding:11px 15px max(13px,env(safe-area-inset-bottom));
+  background:#ffffffed;
+  backdrop-filter:blur(18px);
+  border-top:1px solid #e8edf6;
+  box-shadow:0 -8px 24px #3c5d8a05
+}
+.scope :global(.bottom-nav>button) {
+  border:0;
+  background:none;
+  color:#8491a8;
+  display:flex;
+  flex-direction:column;
+  gap:5px;
+  align-items:center;
+  justify-content:center;
+  min-height:49px;
+  font-size:9px;
+  font-weight:500
+}
+.scope :global(.bottom-nav>button[aria-current=page]) {
+  color:var(--blue)
+}
+.scope :global(.bottom-nav>button[aria-current=page]>svg) {
+  fill:#e8f0ff;
+  stroke-width:2.3
+}
+.scope :global(.bottom-nav .nav-add>span) {
+  display:grid;
+  place-items:center;
+  width:49px;
+  height:49px;
+  border-radius:17px;
+  background:linear-gradient(140deg,#4d8aff,#225ee5);
+  color:white;
+  box-shadow:0 6px 15px #2463eb38,inset 0 1px #ffffff80
+}
+.scope :global(.toast) {
+  position:fixed;
+  z-index:70;
+  bottom:95px;
+  left:50%;
+  transform:translateX(-50%);
+  display:flex;
+  align-items:center;
+  gap:8px;
+  max-width:calc(100% - 40px);
+  padding:11px 20px;
+  border-radius:30px;
+  background:#183864;
+  color:white;
+  font-size:12px;
+  box-shadow:0 8px 30px #18386430
+}
+.scope:global(.loading) {
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  flex-direction:column;
+  gap:20px;
+  padding:30px
+}
+.scope:global(.loading) :global(h2) {
+  font-size:17px;
+  color:#506a90
+}
+.scope :global(.loading-bar) {
+  width:90px;
+  height:4px;
+  border-radius:10px;
+  background:linear-gradient(90deg,#e2ecff,#6d9dff,#e2ecff);
+  background-size:200%;
+  animation:shimmer 1.5s infinite
+}
+@keyframes shimmer {
+  to {
+  background-position:200%
+}
+
+}
+@media (max-width:360px) {
+  .scope :global(.mobile-content) {
+  padding-left:16px;
+  padding-right:16px
+}
+.scope :global(.app-header) {
+  padding-left:16px;
+  padding-right:16px
+}
+.scope :global(.greeting h1) {
+  font-size:17px
+}
+.scope :global(.greeting) {
+  gap:8px
+}
+.scope :global(.month-picker input) {
+  width:118px
+}
+.scope :global(.month-picker button) {
+  width:20px
+}
+
+}
+

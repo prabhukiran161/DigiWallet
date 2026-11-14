@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { localDate, upgradeWallet, type Wallet, type EventType } from "@/lib/ledger";
 import type { Institution } from "../components/account-form";
 import type { View, AccountFilter } from "./types";
@@ -19,6 +19,7 @@ export function useWalletApp() {
   const [notice, setNotice] = useState("");
   const [hidden, setHidden] = useState(false);
   const [filter, setFilter] = useState<AccountFilter>("All");
+  const initialLoadStarted = useRef(false);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -61,6 +62,10 @@ export function useWalletApp() {
   }, []);
 
   useEffect(() => {
+    // Fast Refresh can replay this effect while preserving the current wallet.
+    if (initialLoadStarted.current) return;
+    initialLoadStarted.current = true;
+
     const q = new URLSearchParams(window.location.search);
     const target = q.get("view");
     if (["Home", "Accounts", "Activity", "Budget", "Settings"].includes(target || "")) {

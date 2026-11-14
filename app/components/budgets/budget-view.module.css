@@ -1,0 +1,158 @@
+/* Scoped to DigiWallet's app shell;
+  keep feature rules in this module. */ .scope :global(.budget-overview) {
+  background:linear-gradient(150deg,#f4f8ff,#fff 60%);
+  border:1px solid var(--line);
+  border-radius:25px;
+  padding:6px 21px;
+  margin-bottom:28px
+}
+.scope :global(.budget-overview>.section-head) {
+  margin:10px 0 0;
+  font-size:12px;
+  color:#6a7b95
+}
+.scope :global(.budget-overview .icon-button) {
+  width:35px;
+  height:35px;
+  border-radius:12px
+}
+.scope :global(.budget-ring) {
+  width:230px;
+  max-width:100%;
+  aspect-ratio:1;
+  margin:3px auto 0;
+  position:relative
+}
+.scope :global(.budget-ring svg) {
+  width:100%;
+  height:100%;
+  transform:rotate(-90deg)
+}
+.scope :global(.budget-ring circle) {
+  fill:none;
+  stroke-width:9
+}
+.scope :global(.ring-track) {
+  stroke:#eaf0fa
+}
+.scope :global(.ring-value) {
+  stroke:url(#budget-blue);
+  stroke-linecap:round
+}
+.scope :global(.ring-value.over) {
+  stroke:#d17770
+}
+.scope :global(.budget-ring>div) {
+  position:absolute;
+  inset:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  flex-direction:column;
+  padding:32px;
+  text-align:center
+}
+.scope :global(.budget-ring span) {
+  font-size:11px;
+  color:var(--muted)
+}
+.scope :global(.budget-ring strong) {
+  font-size:26px;
+  letter-spacing:-.9px;
+  margin:7px 0;
+  overflow-wrap:anywhere;
+  max-width:100%
+}
+.scope :global(.budget-ring small) {
+  font-size:10px;
+  color:#7c8ba3
+}
+.scope :global(.budget-overview .metric-pair) {
+  border-top:1px solid var(--line);
+  text-align:center
+}
+.scope :global(.budget-row) {
+  display:flex;
+  gap:13px;
+  align-items:flex-start;
+  margin:21px 0
+}
+.scope :global(.budget-row-main) {
+  flex:1;
+  min-width:0
+}
+.scope :global(.budget-row-main>div) {
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+  font-size:12px
+}
+.scope :global(.budget-row-main span) {
+  overflow-wrap:anywhere;
+  text-align:right
+}
+.scope :global(.budget-row-main small) {
+  font-size:10px;
+  color:var(--muted)
+}
+.scope :global(progress) {
+  display:block;
+  width:100%;
+  height:5px;
+  border:0;
+  border-radius:4px;
+  margin:10px 0 5px;
+  accent-color:#4a83ef;
+  overflow:hidden
+}
+.scope :global(progress::-webkit-progress-bar) {
+  background:#edf2fa;
+  border-radius:4px
+}
+.scope :global(progress::-webkit-progress-value) {
+  background:linear-gradient(90deg,#7ba7ff,#3473ec);
+  border-radius:4px
+}
+.scope :global(progress::-moz-progress-bar) {
+  background:#4a83ef;
+  border-radius:4px
+}
+.scope :global(progress.over::-webkit-progress-value) {
+  background:#d58e80
+}
+.scope :global(progress.over::-moz-progress-bar) {
+  background:#d58e80
+}
+.scope :global(.budget-input-row) {
+  display:flex;
+  align-items:center;
+  gap:12px
+}
+.scope :global(.budget-input-row .field) {
+  flex:1
+}
+.scope :global(.budget-input-row .transaction-icon) {
+  margin-top:-12px
+}
+.scope :global(.budget-row) {
+  border-radius:15px;
+  background:#f2f6fe;
+  margin-bottom:9px;
+  padding:14px
+}
+.scope :global(.budget-row:nth-child(3n+2)) {
+  background:#eef8f6
+}
+.scope :global(.budget-row:nth-child(3n+3)) {
+  background:#fcf4e9
+}
+.scope :global(.budget-row-main) {
+  min-width:0
+}
+.scope :global(.budget-row-main>div) {
+  gap:8px
+}
+.scope :global(.budget-row-main strong) {
+  overflow-wrap:anywhere
+}
+
