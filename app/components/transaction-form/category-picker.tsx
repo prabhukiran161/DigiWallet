@@ -2,6 +2,7 @@ import type { EventType, Wallet } from "@/lib/ledger";
 import { currency } from "@/lib/display";
 import { Field } from "../primitives";
 import { CategoryIcon } from "../category-icon";
+import { categoryBadgeStyle } from "@/lib/category-colors";
 
 interface CategoryPickerProps {
   type: EventType;
@@ -63,6 +64,7 @@ export function CategoryPicker({
                   type="button"
                   className={category === c.id ? "selected" : ""}
                   aria-pressed={category === c.id}
+                  style={categoryBadgeStyle(c.color)}
                   onClick={() => onSelectCategory(c.id)}
                 >
                   <CategoryIcon category={c.id} size={17} wallet={wallet} />

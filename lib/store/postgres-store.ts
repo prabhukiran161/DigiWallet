@@ -33,6 +33,18 @@ export function openPostgresStore(
       const current = await readWallet(tx,user);
       const updated = fn(current);
       await writeWallet(tx,user,current,updated);
+      if (action === "category") {
+        const previousColors = new Map(current.categories.map(({ id, color }) => [id, color]));
+        const changed = updated.categories.filter(({ id, color }) => previousColors.get(id) !== color);
+        for (const category of changed) {
+          const [persisted] = await tx<{ color: string | null }[]>`
+            SELECT color FROM dw_categories WHERE wallet_id = ${user} AND id = ${category.id}
+          `;
+          if (!persisted || persisted.color !== (category.color ?? null)) {
+            throw new Error("The category color could not be saved. Please try again.");
+          }
+        }
+      }
       await tx`INSERT INTO dw_audit_log (actor_id,wallet_id,action,recorded_at) VALUES (${user},${user},${action},${new Date().toISOString()})`;
       return updated;
     });

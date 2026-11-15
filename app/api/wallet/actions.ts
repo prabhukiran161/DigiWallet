@@ -82,6 +82,7 @@ export function executeWalletAction(
           id: z.string().min(1).max(100),
           name: z.string().max(50).optional(),
           icon: z.string().optional(),
+          color: z.string().max(24).nullable().optional(),
           archived: z.boolean().optional(),
         })
         .strict()

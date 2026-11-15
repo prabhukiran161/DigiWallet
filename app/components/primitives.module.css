@@ -144,25 +144,6 @@
   margin-top:5px;
   overflow-wrap:anywhere
 }
-.scope :global(dialog) {
-  width:calc(100% - 16px);
-  max-width:440px;
-  max-height:calc(100dvh - 20px);
-  margin:auto auto 0;
-  padding:0;
-  border:1px solid #e8eef9;
-  border-bottom:0;
-  border-radius:25px 25px 0 0;
-  color:var(--ink);
-  background:#fff;
-  box-shadow:0 -12px 70px #193b7220;
-  overflow:auto;
-  overscroll-behavior:contain
-}
-.scope :global(dialog::backdrop) {
-  background:#14294c55;
-  backdrop-filter:blur(5px)
-}
 @media (max-width:360px) {
   .scope :global(.section-head) {
   gap:7px

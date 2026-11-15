@@ -1,4 +1,3 @@
-import type { ReactNode } from "react";
 import {
   WalletCards,
   ArrowDownLeft,
@@ -9,7 +8,6 @@ import {
   ArrowRight,
   Plus,
   ChartNoAxesCombined,
-  ChevronRight,
   ArrowDown,
   ArrowUp,
   Lock,
@@ -18,9 +16,8 @@ import balanceStyles from "./balance-card.module.css";
 import accountsPanel from "./home-accounts-panel.module.css";
 import { summary, type Wallet, type EventType } from "@/lib/ledger";
 import { currency } from "@/lib/display";
-import { Empty, InfoNote, type Save } from "../components/primitives";
+import { Empty } from "../components/primitives";
 import { AccountCards } from "../components/accounts";
-import { History } from "../components/history";
 import type { View, AccountFilter } from "./types";
 
 interface HomeViewProps {
@@ -28,8 +25,6 @@ interface HomeViewProps {
   month: string;
   hidden: boolean;
   onToggleHidden: () => void;
-  monthControl: ReactNode;
-  save: Save;
   onNavigate: (view: View) => void;
   onRecord: (type: EventType) => void;
   onOpenAddAccount: () => void;
@@ -41,15 +36,12 @@ export function HomeView({
   month,
   hidden,
   onToggleHidden,
-  monthControl,
-  save,
   onNavigate,
   onRecord,
   onOpenAddAccount,
   onFilterAccounts,
 }: HomeViewProps) {
   const s = summary(wallet, month);
-  const budget = wallet.budgets[month];
   const active = wallet.accounts.filter((a) => !a.archived && !a.closedAt);
   const amount = (n: number) => (hidden ? "••••••" : currency(n));
 
@@ -206,7 +198,6 @@ export function HomeView({
           wallet={wallet}
           accounts={active}
           month={month}
-          save={save}
           compact
           hidden={hidden}
         />
@@ -220,67 +211,6 @@ export function HomeView({
         </Empty>
       )}
 
-      <div className="section-head month-heading">
-        <h2>This month</h2>
-        {monthControl}
-      </div>
-
-      <div className="flow-grid">
-        <div>
-          <span className="flow-icon in">
-            <ArrowDownLeft size={17} />
-          </span>
-          <span>
-            Liquid inflow<strong>{amount(s.inflow)}</strong>
-          </span>
-        </div>
-        <div>
-          <span className="flow-icon out">
-            <ArrowUpRight size={17} />
-          </span>
-          <span>
-            Liquid outflow<strong>{amount(s.outflow)}</strong>
-          </span>
-        </div>
-      </div>
-
-      <button className="budget-peek" onClick={() => onNavigate("Budget")}>
-        <span className="budget-peek-icon">
-          <ChartNoAxesCombined size={22} />
-        </span>
-        <span>
-          <strong>
-            {budget
-              ? `${amount(budget.total - s.expenses)} left`
-              : "Set your monthly budget"}
-          </strong>
-          <small>
-            {budget ? "Monthly budget" : "A little plan. A clearer month."}
-          </small>
-        </span>
-        <ChevronRight size={18} />
-        {budget && (
-          <progress
-            max={Math.max(budget.total, s.expenses, 1)}
-            value={Math.max(s.expenses, 0)}
-            aria-label="Monthly budget used"
-          />
-        )}
-      </button>
-
-      <History
-        wallet={wallet}
-        month={month}
-        compact
-        onSeeAll={() => onNavigate("Activity")}
-        hidden={hidden}
-      />
-
-      <InfoNote label="What’s included?">
-        Available is bank and cash, including borrowed funds. Net worth includes
-        investments and money lent, less debts. Unallocated cash:{" "}
-        {amount(s.unallocated)}.
-      </InfoNote>
     </>
   );
 }

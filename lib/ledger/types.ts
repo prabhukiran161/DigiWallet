@@ -113,6 +113,7 @@ export type Wallet = {
   events: Journal[];
   allocations: Allocation[];
   categories: {
+    color?: string;
     id: string;
     name: string;
     archived: boolean;

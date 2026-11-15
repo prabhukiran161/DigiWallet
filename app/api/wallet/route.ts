@@ -4,6 +4,7 @@ import sharp from "sharp";
 import { store, identify, limit } from "@/lib/store";
 import { sameOrigin } from "@/lib/origin";
 import { executeWalletAction } from "./actions";
+import { accountSpending } from "@/lib/account-spending";
 
 export const runtime = "nodejs";
 
@@ -28,6 +29,18 @@ export async function GET(req: NextRequest) {
     }
 
     const wallet = await s.read(user.id);
+    if (req.nextUrl.searchParams.has("accountSpending")) {
+      const range = z.object({ from: z.iso.date(), to: z.iso.date() }).safeParse({
+        from: req.nextUrl.searchParams.get("from"),
+        to: req.nextUrl.searchParams.get("to"),
+      });
+      if (!range.success || range.data.from > range.data.to) {
+        return NextResponse.json({ error: "Choose a valid date range." }, { status: 400 });
+      }
+      return NextResponse.json({ accounts: accountSpending(wallet, range.data) }, {
+        headers: { "Cache-Control": "no-store" },
+      });
+    }
     if (req.nextUrl.searchParams.has("export")) {
       return new NextResponse(JSON.stringify(wallet, null, 2), {
         headers: {

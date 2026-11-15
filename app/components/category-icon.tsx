@@ -22,6 +22,7 @@ import {
   PiggyBank,
 } from "lucide-react";
 import type { Wallet } from "@/lib/ledger";
+import { categoryColorHex } from "@/lib/category-colors";
 
 const CATEGORY_ICONS = {
   food: Utensils,
@@ -58,8 +59,8 @@ export function CategoryIcon({
   size = 19,
   wallet,
 }: CategoryIconProps) {
-  const key =
-    wallet?.categories.find((c) => c.id === category)?.icon || category;
+  const entry = wallet?.categories.find((c) => c.id === category);
+  const key = entry?.icon || category;
   const Icon = CATEGORY_ICONS[key as keyof typeof CATEGORY_ICONS] || Shapes;
-  return <Icon size={size} />;
+  return <Icon size={size} style={{ color: categoryColorHex(entry?.color) }} />;
 }

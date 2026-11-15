@@ -1,11 +1,12 @@
 import type { Wallet } from "./types";
 import { check } from "./money";
 import { categoryIcons } from "../category-options";
+import { isCategoryColor } from "../category-colors";
 import { management, upgradeWallet } from "./wallet";
 
 export function manageCategory(
   source: Wallet,
-  input: { id: string; name?: string; icon?: string; archived?: boolean },
+  input: { id: string; name?: string; icon?: string; archived?: boolean; color?: string | null },
   remove = false,
 ): Wallet {
   const w = upgradeWallet(source),
@@ -21,6 +22,8 @@ export function manageCategory(
 
   const name = (input.name ?? c?.name ?? "").trim(),
     icon = input.icon ?? c?.icon ?? "other";
+  check(input.color == null || isCategoryColor(input.color), "Choose a predefined category color.");
+  const color = input.color === undefined ? c?.color : input.color ?? undefined;
   check(
     name.length > 0 && name.length <= 50,
     "Enter a category name (maximum 50 characters).",
@@ -35,10 +38,11 @@ export function manageCategory(
     Object.assign(c, {
       name,
       icon,
+      color,
       archived: input.archived ?? c.archived,
     });
   } else {
-    w.categories.push({ id: input.id, name, icon, archived: false, system: false });
+    w.categories.push({ id: input.id, name, icon, color, archived: false, system: false });
   }
   return w;
 }

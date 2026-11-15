@@ -1,6 +1,12 @@
-import type { Journal } from "@/lib/ledger";
+import type { Journal, Wallet } from "@/lib/ledger";
 import { money } from "@/lib/ledger";
 import { currency } from "@/lib/display";
+
+export function transactionAccount(wallet: Wallet, event: Journal) {
+  const id = event.command?.account ?? (event.type === "opening" ? event.id.slice("opening-".length) : undefined);
+  return (id ? wallet.accounts.find((account) => account.id === id) : undefined)
+    ?? wallet.accounts.find((account) => event.lines.some((line) => line.account === account.id));
+}
 
 export function dayLabel(date: string): string {
   return new Date(`${date}T12:00:00`).toLocaleDateString("en-IN", {

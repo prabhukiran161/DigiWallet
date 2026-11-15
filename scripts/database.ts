@@ -17,8 +17,10 @@ try {
     const file=resolve('database/schema.sql');
     const body=await readFile(file,'utf8');
     const checksum=createHash('sha256').update(body).digest('hex');
-    const logos=await readFile(resolve('database/002_institution_logos.sql'),'utf8');
-    const logosChecksum=createHash('sha256').update(logos).digest('hex');
+    const migrations = await Promise.all(['002_institution_logos', '003_category_colors'].map(async (name) => {
+      const sql = await readFile(resolve(`database/${name}.sql`), 'utf8');
+      return { name, sql, checksum: createHash('sha256').update(sql).digest('hex') };
+    }));
     await sql.begin(async tx=>{
       await tx`SELECT pg_advisory_xact_lock(71904123)`;
       await tx.unsafe('SET LOCAL search_path TO public');
@@ -26,25 +28,24 @@ try {
         await tx.unsafe(`DROP TABLE IF EXISTS dw_v3_wallet_meta,dw_v3_accounts,dw_v3_categories,dw_v3_events,dw_v3_lines,dw_v3_revisions,dw_v3_limits,dw_v3_allocations,dw_v3_commitments,dw_v3_budgets,dw_v3_budget_categories,dw_v3_deleted_accounts,dw_v3_management,attempts,audit,institutions,wallets,sessions,users,dw_rate_limits,dw_audit_log,dw_budgets,dw_loan_funding,dw_transaction_revisions,dw_transaction_entries,dw_transactions,dw_categories,dw_accounts,dw_sessions,dw_institutions,dw_wallets,dw_users,dw_schema_migrations CASCADE`);
         await tx.unsafe('DROP FUNCTION IF EXISTS dw_check_balanced_transaction() CASCADE; DROP FUNCTION IF EXISTS dw_check_funding_account_types() CASCADE; DROP FUNCTION IF EXISTS dw_v3_check_journal() CASCADE;');
       }
-      else {
-        const exists=await tx`SELECT to_regclass('public.dw_users') AS present`;
-        if(exists[0].present) {
-          const applied=await tx`SELECT checksum FROM dw_schema_migrations WHERE name='002_institution_logos'`;
-          if (applied[0]) {
-            if (applied[0].checksum !== logosChecksum) throw new Error('Institution logo migration checksum mismatch.');
-            return;
-          }
-          await tx.unsafe(logos);
-          await tx`INSERT INTO dw_schema_migrations(name,checksum) VALUES('002_institution_logos',${logosChecksum})`;
-          return;
+      const [existing] = await tx`SELECT to_regclass('public.dw_users') AS present`;
+      if (!existing.present) {
+        if (command !== 'reset') {
+          const [legacy] = await tx`SELECT to_regclass('public.users') AS present`;
+          if (legacy.present) throw new Error('Old DigiWallet tables exist. Inspect data before migrating.');
         }
-        const legacy=await tx`SELECT to_regclass('public.users') AS present`;
-        if(legacy[0].present)throw new Error('Old DigiWallet tables exist. Inspect data and use the explicit development reset.');
+        await tx.unsafe(body);
+        await tx`INSERT INTO dw_schema_migrations(name,checksum) VALUES('001_initial',${checksum})`;
       }
-      await tx.unsafe(body);
-      await tx`INSERT INTO dw_schema_migrations(name,checksum) VALUES('001_initial',${checksum})`;
-      await tx.unsafe(logos);
-      await tx`INSERT INTO dw_schema_migrations(name,checksum) VALUES('002_institution_logos',${logosChecksum})`;
+      for (const migration of migrations) {
+        const [applied] = await tx`SELECT checksum FROM dw_schema_migrations WHERE name=${migration.name}`;
+        if (applied) {
+          if (applied.checksum !== migration.checksum) throw new Error(`Migration checksum mismatch: ${migration.name}`);
+          continue;
+        }
+        await tx.unsafe(migration.sql);
+        await tx`INSERT INTO dw_schema_migrations(name,checksum) VALUES(${migration.name},${migration.checksum})`;
+      }
     });
     console.log(command==='reset'?'DigiWallet-owned tables reset and new schema created.':'DigiWallet migrations are up to date.');
   } else if (command === 'status') {

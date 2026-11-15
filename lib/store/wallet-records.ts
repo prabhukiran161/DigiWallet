@@ -33,7 +33,7 @@ export async function readWallet(db:Db,user:string):Promise<Wallet>{
    coalesce((SELECT jsonb_agg(to_jsonb(a) ORDER BY a.sequence) FROM dw_audit_log a WHERE a.wallet_id=w.id AND a.entity_type='wallet_history'),'[]'::jsonb) AS history
    FROM dw_wallets w WHERE w.id=$1`,[user]);
  const r=result[0]; if(!r) throw new Error('Wallet not found.');
- const categories=r.categories.map((c:any)=>({id:c.id,name:c.name,archived:c.archived,icon:c.icon,system:c.is_system}));
+ const categories=r.categories.map((c:any)=>({id:c.id,name:c.name,archived:c.archived,icon:c.icon,system:c.is_system,color:c.color??undefined}));
  const linesByTx=new Map<string,any[]>(),revisionsByTx=new Map<string,any[]>();
  for(const entry of r.entries){const rows=linesByTx.get(entry.transaction_id)??[];rows.push(entry);linesByTx.set(entry.transaction_id,rows);}
  for(const revision of r.revisions){const rows=revisionsByTx.get(revision.transaction_id)??[];rows.push(revision);revisionsByTx.set(revision.transaction_id,rows);}
@@ -63,7 +63,7 @@ export async function writeWallet(db:Db,user:string,before:Wallet,after:Wallet){
  // in memory; do not fetch every table again just to discover what changed.
  const oldBalances=accountBalances(before),newBalances=accountBalances(after);
  const oldAccounts=before.accounts.map((a,i)=>row(a,user,i,institutionId(a.institution,a.type),oldBalances.get(a.id)??0));
- const oldCategories=before.categories.map((c,i)=>({wallet_id:user,id:c.id,position:i,name:c.name,archived:c.archived,icon:c.icon??'other',is_system:!!c.system}));
+ const oldCategories=before.categories.map((c,i)=>({wallet_id:user,id:c.id,position:i,name:c.name,archived:c.archived,icon:c.icon??'other',is_system:!!c.system,color:c.color??null}));
  const oldTx=before.events.map((e,i)=>({...eventRow(e,user),position:i}));
  const oldLines=before.events.flatMap(e=>e.lines.map((l,i)=>({id:`${e.id}:${i}`,wallet_id:user,transaction_id:e.id,line_no:i,account_id:l.account.startsWith('system:')?null:l.account,system_account:l.account.startsWith('system:')?l.account.slice(7):null,amount_paise:l.delta})));
  const oldRevisions=before.events.flatMap(e=>(e.revisions??[]).map((r,i)=>({wallet_id:user,transaction_id:e.id,revision:i+1,edited_at:r.editedAt,request_key:r.requestKey??null,previous_command:r.command,replacement_command:r.replacement??e.command,id:`${e.id}:${i+1}`})));
@@ -71,7 +71,7 @@ export async function writeWallet(db:Db,user:string,before:Wallet,after:Wallet){
  const oldBudgets=Object.entries(before.budgets).flatMap(([month,b])=>Object.entries(b.categories).map(([category_id,amount_paise])=>({id:`${month}:${category_id}`,wallet_id:user,month:`${month}-01`,category_id,amount_paise})));
  const newAccounts=after.accounts.map((a,i)=>row(a,user,i,institutionId(a.institution,a.type),newBalances.get(a.id)??0));
  await saveRows(db,user,'dw_accounts',oldAccounts,newAccounts,['wallet_id','id','position','name','type','opening_paise','opening_date','balance_paise','credit_limit_paise','institution_id','counterparty','purpose','loan_type','terms','due_date','archived','generated','created_at','closed_at','credit_limit_history','metadata']);
- await saveRows(db,user,'dw_categories',oldCategories,after.categories.map((c,i)=>({wallet_id:user,id:c.id,position:i,name:c.name,archived:c.archived,icon:c.icon??'other',is_system:!!c.system})),['wallet_id','id','position','name','archived','icon','is_system']);
+ await saveRows(db,user,'dw_categories',oldCategories,after.categories.map((c,i)=>({wallet_id:user,id:c.id,position:i,name:c.name,archived:c.archived,icon:c.icon??'other',is_system:!!c.system,color:c.color??null})),['wallet_id','id','position','name','archived','icon','is_system','color']);
  const txRows=after.events.map((e,i)=>({...eventRow(e,user),position:i}));
  await saveRows(db,user,'dw_transactions',oldTx,txRows,['wallet_id','id','position','type','effective_at','recorded_at','description','notes','category_id','amount_paise','income_paise','expense_paise','inflow_paise','outflow_paise','revision','details']);
  const lines=after.events.flatMap(e=>e.lines.map((l,i)=>({id:`${e.id}:${i}`,wallet_id:user,transaction_id:e.id,line_no:i,account_id:l.account.startsWith('system:')?null:l.account,system_account:l.account.startsWith('system:')?l.account.slice(7):null,amount_paise:l.delta})));

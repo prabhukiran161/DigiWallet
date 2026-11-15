@@ -137,7 +137,6 @@ export function Settings({ wallet, save, month }: SettingsProps) {
               wallet={wallet}
               accounts={wallet.accounts.filter((a) => a.closedAt)}
               month={month}
-              save={save}
               initialSelected={initialClosed}
             />
           ) : panel === "categories" ? (

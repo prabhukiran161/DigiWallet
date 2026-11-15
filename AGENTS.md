@@ -10,6 +10,8 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 
 ## DigiWallet styling conventions
 
+- Use Manrope across the interface. Inherit the app font from the global `--font` token.
+
 - Use CSS Modules (`*.module.css`) for component-specific and feature-specific styles. Keep a module beside its component or feature folder, and import it from the component that uses it.
 - Keep `app/globals.css` limited to the Tailwind import, design tokens/custom properties, reset rules, document/body defaults, typography, and styles that truly apply across the whole app.
 - Put reusable visual patterns in the shared component that owns them. Avoid duplicating component styles or adding new feature selectors to `globals.css`.

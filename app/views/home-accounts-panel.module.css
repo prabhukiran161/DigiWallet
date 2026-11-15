@@ -4,7 +4,6 @@
   --deep-blue: #062779;
   --divider: #064ccd29;
   --tint: #064ccd12;
-  font-family: Manrope, var(--font);
   color: var(--deep-blue);
   border-color: var(--divider);
 }
@@ -12,10 +11,6 @@
 .actions,
 .count {
   border-color: var(--divider);
-}
-
-.action + .action {
-  border-inline-start: 1px solid var(--divider);
 }
 
 .action {

@@ -104,9 +104,17 @@ export function useWalletApp() {
           (text ? text.slice(0, 100) : `Unable to save (${res.status}).`),
       );
     }
+    if (action === "category" && data && typeof data === "object" && "id" in data && "color" in data) {
+      const saved = result.wallet?.categories.find((category) => category.id === data.id);
+      if (!saved || (saved.color ?? null) !== data.color) {
+        throw new Error("The server did not confirm the category color. Reload the app and try again.");
+      }
+    }
     if (result.wallet) setWallet(upgradeWallet(result.wallet));
     if (result.institutions) setInstitutions(result.institutions);
-    setNotice("Saved");
+    if (action !== "category" && action !== "deleteCategory") {
+      setNotice(action === "budget" ? "Budget saved successfully!" : "Saved");
+    }
   }
 
   function navigate(next: View) {

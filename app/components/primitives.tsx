@@ -2,17 +2,21 @@
 import { useEffect, useId, useRef, type ReactNode } from "react";
 import { ArrowLeft, Info } from "lucide-react";
 import { BrandLogo } from "./brand-logo";
+import styles from "./full-screen.module.css";
+import { PageHeader } from "./layout/app-header";
 
 export type Save = (action: string, data: unknown) => Promise<void>;
 
 interface ModalProps {
   title: string;
+  titleIcon?: ReactNode;
   children: ReactNode;
   onClose: () => void;
   className?: string;
+  pageHeader?: boolean;
 }
 
-export function Modal({ title, children, onClose, className }: ModalProps) {
+export function Modal({ title, titleIcon, children, onClose, className, pageHeader }: ModalProps) {
   const ref = useRef<HTMLDialogElement>(null);
   const id = useId();
 
@@ -30,19 +34,22 @@ export function Modal({ title, children, onClose, className }: ModalProps) {
   }, []);
 
   return (
-    <dialog ref={ref} aria-labelledby={id} onCancel={onClose} className={className}>
+    <dialog ref={ref} aria-labelledby={id} onCancel={onClose}
+      className={`${styles.screen} ${className ?? ""}`}>
+      {pageHeader ? <PageHeader title={title} titleIcon={titleIcon} titleId={id} onBack={onClose} /> : (
       <header className="modal-head">
         <button
           type="button"
           className="icon-button"
           onClick={onClose}
-          aria-label="Close dialog"
+          aria-label="Go back"
         >
           <ArrowLeft size={20} />
         </button>
         <h2 id={id}>{title}</h2>
         <span className="header-spacer" />
       </header>
+      )}
       <div className="modal-content">{children}</div>
     </dialog>
   );

@@ -1,18 +1,5 @@
 dialog.dialog {
-  width: min(100%, 460px);
-  height: min(940px, calc(100dvh - 24px));
-  max-width: none;
-  max-height: 100dvh;
-  margin: auto;
-  border: 1px solid var(--line);
-  border-radius: 28px;
   background: #fbfcff;
-  overflow: auto;
-  scrollbar-width: none;
-}
-
-.dialog::-webkit-scrollbar {
-  display: none;
 }
 
 .dialog :global(.modal-head) {
@@ -54,7 +41,7 @@ dialog.dialog :global(.modal-content) {
   background: transparent;
   box-shadow: none;
   color: var(--ink);
-  font-size: clamp(24px, 8vw, 44px);
+  font-size: clamp(24px, 8vw, 60px);
   font-weight: 600;
   text-align: center;
 }
@@ -95,11 +82,6 @@ dialog.dialog :global(.modal-content) {
 }
 
 @media (max-width: 480px) {
-  dialog.dialog {
-    height: 100dvh;
-    border-radius: 0;
-  }
-
   dialog.dialog :global(.modal-content) {
     padding-inline: 16px;
   }

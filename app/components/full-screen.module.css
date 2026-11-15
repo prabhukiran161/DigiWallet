@@ -1,0 +1,22 @@
+.screen {
+  position: fixed;
+  inset: 0;
+  width: min(100%, 440px);
+  max-width: none;
+  height: 100dvh;
+  max-height: none;
+  margin: 0 auto;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  color: var(--ink);
+  background: #fff;
+  overflow: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: none;
+}
+
+.screen::backdrop {
+  background: transparent;
+}
+

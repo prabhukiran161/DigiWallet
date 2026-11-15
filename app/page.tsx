@@ -5,7 +5,6 @@ import { Auth } from "./components/auth";
 import { Modal } from "./components/primitives";
 import { TransactionForm } from "./components/transaction-form";
 import { AccountForm } from "./components/account-form";
-import { MonthPicker } from "./components/layout/month-picker";
 import { BottomNav } from "./components/layout/bottom-nav";
 import { AppHeader } from "./components/layout/app-header";
 import {
@@ -26,10 +25,8 @@ export default function Home() {
   if (app.loading) {
     return (
       <main className={`phone-shell loading ${appStyleScopes}`} role="status">
-        <span className="brand-mark">
-          <BrandLogo variant="white" size={58} />
-        </span>
-        <h2>Opening your wallet</h2>
+        <BrandLogo variant="blue" size={58} />
+        <h2>Opening Your Wallet</h2>
         <div className="loading-bar" />
       </main>
     );
@@ -49,16 +46,10 @@ export default function Home() {
   if (!app.user) return <Auth onDone={() => void app.load()} />;
   if (!app.wallet) return null;
 
-  const monthControl = (
-    <MonthPicker
-      month={app.month}
-      onChangeMonth={app.changeMonth}
-      onSetMonth={(m) => {
-        app.setMonth(m);
-        app.setDay("");
-      }}
-    />
-  );
+  function selectMonth(month: string) {
+    app.setMonth(month);
+    app.setDay("");
+  }
 
   return (
     <div className={`phone-shell ${appStyleScopes}`}>
@@ -74,15 +65,13 @@ export default function Home() {
         onAddAccount={() => app.setModal("account")}
       />
 
-      <main id="main" className="mobile-content">
+      <main id="main" className="mobile-content" data-view={app.view}>
         {app.view === "Home" && (
           <HomeView
             wallet={app.wallet}
             month={app.month}
             hidden={app.hidden}
             onToggleHidden={() => app.setHidden(!app.hidden)}
-            monthControl={monthControl}
-            save={app.save}
             onNavigate={app.navigate}
             onRecord={app.record}
             onOpenAddAccount={() => app.setModal("account")}
@@ -96,7 +85,6 @@ export default function Home() {
             month={app.month}
             filter={app.filter}
             onSelectFilter={app.setFilter}
-            save={app.save}
             onRecord={app.record}
             onOpenAddAccount={() => app.setModal("account")}
           />
@@ -107,7 +95,8 @@ export default function Home() {
             wallet={app.wallet}
             month={app.month}
             day={app.day}
-            monthControl={monthControl}
+            onChangeMonth={app.changeMonth}
+            onSetMonth={selectMonth}
             onSetDay={app.setDay}
           />
         )}
@@ -116,10 +105,9 @@ export default function Home() {
           <BudgetView
             wallet={app.wallet}
             month={app.month}
-            monthControl={monthControl}
+            onChangeMonth={app.changeMonth}
+            onSetMonth={selectMonth}
             save={app.save}
-            onNavigate={app.navigate}
-            onSetDay={app.setDay}
           />
         )}
 

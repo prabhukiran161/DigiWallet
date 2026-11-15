@@ -1,0 +1,145 @@
+.activity {
+  color: var(--ink);
+}
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-block: 12px 14px;
+}
+
+.toolbar h2 {
+  font-size: clamp(17px, 5vw, 22px);
+  font-weight: 800;
+}
+
+.accountToolbar { margin-block-start: 0; }
+
+.monthSpending {
+  min-width: 0;
+  text-align: end;
+  font-size: 11px;
+}
+
+.monthSpending strong {
+  display: block;
+  font-size: clamp(13px, 4vw, 17px);
+  font-weight: 800;
+  overflow-wrap: anywhere;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.actions button:global(.icon-button) {
+  position: relative;
+  width: 36px;
+  height: 36px;
+  border-radius: 12px;
+  background: #f8faff;
+}
+
+.filterDot {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--blue);
+  box-shadow: 0 0 0 2px #f8faff;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-block: 8px 12px;
+}
+
+.chips button {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  min-height: 32px;
+  max-width: 100%;
+  padding-inline: 9px;
+  border-radius: 20px;
+  background: #e8efff;
+  font-size: 12px;
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+
+.chips svg { color: var(--blue); }
+
+.date {
+  margin: 12px 0 0;
+  padding: 6px 10px;
+  border-radius: 9px;
+  background: #e9effc;
+  color: #101d49;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.activity .rowFrame:global(.swipe-row) {
+  border-radius: 0;
+  border-bottom-color: #e3ebf9;
+}
+
+.activity > :global(.history-group:last-child) > :global(.history-list) > .rowFrame:last-child {
+  border-bottom: 0;
+}
+
+.activity .rowFrame .row:global(.transaction-row) {
+  min-height: 66px;
+  gap: 8px;
+  padding: 8px 5px;
+}
+
+.activity .row :global(.transaction-description strong) {
+  font-size: clamp(12px, 3.5vw, 15px);
+  font-weight: 800;
+}
+
+.activity .row :global(.transaction-value strong) {
+  font-size: clamp(12px, 3.7vw, 16px);
+  font-weight: 800;
+}
+
+.activity .row .metadata {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 4px;
+  color: #52658b;
+  font-size: 10px;
+}
+
+.activity .metadata :global(.category-tag) {
+  min-width: 0;
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: #35496f;
+  background: #eaf0fb;
+}
+
+.account {
+  display: flex;
+  max-width: 100%;
+  align-items: center;
+  gap: 4px;
+  margin-top: 4px;
+  color: #52658b;
+  font-size: 10px;
+}
+
+.account img { width: 14px; height: 14px; flex-shrink: 0; }
+.account span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }

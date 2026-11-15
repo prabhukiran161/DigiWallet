@@ -42,7 +42,8 @@ export function saveBudget(
     );
   }
 
-  w.budgets[input.month] = { total, categories };
+  if (total === 0) delete w.budgets[input.month];
+  else w.budgets[input.month] = { total, categories };
   return w;
 }
 

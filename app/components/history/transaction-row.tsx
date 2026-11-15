@@ -14,7 +14,12 @@ import {
 } from "@/lib/ledger";
 import { currency, labels } from "@/lib/display";
 import { CategoryIcon } from "../category-icon";
-import { amountLabel } from "./utils";
+import { categoryBadgeStyle } from "@/lib/category-colors";
+import { amountLabel, transactionAccount } from "./utils";
+import { InstitutionMark, useInstitutionCatalog } from "../institution-brand";
+import { ACCOUNT_ICONS } from "../accounts/types";
+import { findInstitution } from "@/lib/institutions";
+import styles from "./activity-transactions.module.css";
 
 type TransactionRowProps = {
   wallet: Wallet;
@@ -22,6 +27,7 @@ type TransactionRowProps = {
   account: string;
   hidden: boolean;
   compact: boolean;
+  activity?: boolean;
   month: string;
 };
 
@@ -31,16 +37,21 @@ export function TransactionRow({
   account,
   hidden,
   compact,
+  activity = false,
   month,
 }: TransactionRowProps) {
   const [offset, setOffset] = useState(0);
   const gesture = useRef({ x: 0, y: 0, start: 0, moved: false });
   const editable = !compact && !!e.command && withinEditWindow(e.recordedAt);
   const a = wallet.accounts.find((a) => a.id === account);
+  const catalog = useInstitutionCatalog();
+  const displayAccount = activity ? transactionAccount(wallet, e) : undefined;
+  const institution = displayAccount && findInstitution(catalog, displayAccount.institution, displayAccount.type);
+  const AccountIcon = displayAccount && ACCOUNT_ICONS[displayAccount.type];
   const href = `/transactions/${encodeURIComponent(e.id)}?account=${encodeURIComponent(account)}&month=${month}`;
 
   return (
-    <div className="swipe-row">
+    <div className={`swipe-row ${activity ? styles.rowFrame : ""}`}>
       {editable && (
         <a
           className="swipe-edit"
@@ -54,7 +65,7 @@ export function TransactionRow({
       )}
       <a
         href={href}
-        className="transaction-row"
+        className={`transaction-row ${activity ? styles.row : ""}`}
         style={{ transform: `translateX(${offset}px)` }}
         onPointerDown={(ev) => {
           gesture.current = {
@@ -83,6 +94,7 @@ export function TransactionRow({
         }}
       >
         <span
+          style={e.expense > 0 ? categoryBadgeStyle(wallet.categories.find((category) => category.id === e.category)?.color) : undefined}
           className={`transaction-icon ${
             e.expense > 0
               ? "category-" + e.category
@@ -103,27 +115,35 @@ export function TransactionRow({
         </span>
         <span className="transaction-description">
           <strong>{e.description}</strong>
-          <small>
-            {new Date(e.date).toLocaleDateString("en-IN", {
+          <small className={activity ? styles.metadata : undefined}>
+            {!activity && <>{new Date(e.date).toLocaleDateString("en-IN", {
               day: "numeric",
               month: "short",
               timeZone: wallet.timezone,
             })}{" "}
-            ·{" "}
+            ·{" "}</>}
             {new Date(e.date).toLocaleTimeString("en-IN", {
               hour: "2-digit",
               minute: "2-digit",
               timeZone: wallet.timezone,
             })}
+            {activity && <><span aria-hidden>·</span><span className="category-tag">
+              {wallet.categories.find((c) => c.id === e.category)?.name || labels[e.type]}
+            </span></>}
           </small>
-          <span className="category-tag">
-            {wallet.categories.find((c) => c.id === e.category)?.name ||
-              labels[e.type]}
-          </span>
+          {!activity && <span className="category-tag">
+            {wallet.categories.find((c) => c.id === e.category)?.name || labels[e.type]}
+          </span>}
         </span>
         <span className={`transaction-value ${e.inflow > 0 ? "positive" : ""}`}>
           <strong>{hidden ? "••••" : amountLabel(e, account)}</strong>
-          {!compact && a && (
+          {displayAccount && AccountIcon && (
+            <span className={styles.account} title={displayAccount.name}>
+              <InstitutionMark src={institution?.logoUrl}><AccountIcon size={14} aria-hidden /></InstitutionMark>
+              <span>{displayAccount.name}</span>
+            </span>
+          )}
+          {!activity && !compact && a && (
             <small>
               {a.type === "card"
                 ? "Credit left"

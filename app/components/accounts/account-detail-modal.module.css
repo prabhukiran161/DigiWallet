@@ -1,0 +1,4 @@
+dialog.screen > :global(.modal-content) {
+  padding-top: 0;
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}

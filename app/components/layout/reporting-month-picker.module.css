@@ -1,0 +1,85 @@
+.toolbar {
+  margin-top: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2px 4px;
+  margin-bottom: 10px;
+  color: var(--ink);
+}
+
+.caption { flex: 1; min-width: 0; padding-inline-start: 6px; font-size: 13px; font-weight: 650; line-height: 1.25; }
+.controls { display: flex; flex-shrink: 0; align-items: center; }
+.controls button, .picker button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 36px;
+  min-width: 26px;
+  border-radius: 10px;
+}
+.controls button { min-width: 22px; }
+.controls .trigger { gap: 4px; padding-inline: 2px; font-size: 12px; font-weight: 650; }
+.shortMonth { display: none; }
+
+.summaryBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 8px 10px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: linear-gradient(145deg, #f3f7ff, #e9effc);
+  color: var(--ink);
+}
+
+.summaryBar .trigger { gap: 7px; font-size: 13px; font-weight: 800; }
+.calendarIcon {
+  display: grid;
+  width: 32px;
+  height: 32px;
+  place-items: center;
+  border-radius: 10px;
+  background: #f8faff;
+  color: var(--blue);
+}
+
+.picker {
+  position: fixed;
+  inset: 0;
+  width: min(calc(100% - 32px), 370px);
+  max-height: calc(100dvh - 32px);
+  margin: auto;
+  padding: 16px;
+  overflow: auto;
+  overscroll-behavior: contain;
+  border: 1px solid var(--line);
+  border-radius: 22px;
+  background: linear-gradient(#f7faff, white);
+  color: var(--ink);
+  box-shadow: 0 16px 40px #14213e35;
+}
+
+.picker::backdrop { background: #14213e48; backdrop-filter: blur(4px); }
+:global(html):has(.picker[open]),
+:global(body):has(.picker[open]) { overflow: hidden; overscroll-behavior: none; }
+.heading, .year { display: flex; align-items: center; justify-content: space-between; }
+.heading h2 { font-weight: 800; }
+.year { padding: 4px 8px; margin-block: 8px 12px; border-radius: 12px; background: var(--soft); }
+.months { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
+.months button { min-height: 42px; border: 1px solid var(--line); font-size: 12px; font-weight: 650; }
+.months button[aria-pressed="true"] { background: var(--blue); border-color: var(--blue); color: white; }
+
+@media (max-width: 420px) {
+  .toolbar { flex-wrap: nowrap; }
+  .caption { padding-inline-start: 4px; font-size: clamp(10px, 3.15vw, 13px); white-space: nowrap; }
+  .controls .trigger { gap: 3px; font-size: 11px; white-space: nowrap; }
+  .fullMonth { display: none; }
+  .shortMonth { display: inline; }
+}
+
+@media (max-width: 340px) {
+  .toolbar .controls .trigger svg { display: none; }
+}

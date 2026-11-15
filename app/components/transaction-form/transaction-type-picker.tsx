@@ -8,7 +8,7 @@ import {
 import type { EventType } from "@/lib/ledger";
 
 const PAGE_SIZE = 5;
-const pickerLabels: Record<EventType, string> = {
+export const transactionTypeLabels: Record<EventType, string> = {
   expense: "Expense",
   transfer: "Transfer",
   lend: "Lending",
@@ -23,7 +23,7 @@ const pickerLabels: Record<EventType, string> = {
   capitalReturn: "Capital Return",
 };
 
-const icons = {
+export const transactionTypeIcons = {
   income: Download,
   borrow: Coins,
   receive: ArrowLeftRight,
@@ -78,7 +78,7 @@ export function TransactionTypePicker({ types, selected, onSelect }: Transaction
         {Array.from({ length: pageCount }, (_, index) => (
           <div key={index} className="grid w-full shrink-0 snap-start snap-always grid-cols-5 items-start gap-1.5 px-1 py-1">
             {types.slice(index * PAGE_SIZE, (index + 1) * PAGE_SIZE).map((type) => {
-              const Icon = icons[type];
+              const Icon = transactionTypeIcons[type];
               return (
                 <button key={type} type="button" aria-pressed={selected === type}
                   onClick={() => onSelect(type)}
@@ -86,8 +86,8 @@ export function TransactionTypePicker({ types, selected, onSelect }: Transaction
                   <span className="grid aspect-square w-full max-w-13 place-items-center rounded-xl border border-[var(--line)] group-aria-pressed:border-[var(--blue)] group-aria-pressed:bg-[var(--soft)]">
                     <Icon size={20} aria-hidden />
                   </span>
-                  <span className="line-clamp-2 min-h-10 w-full text-center text-[14px] leading-5 font-normal [overflow-wrap:anywhere]">
-                    {pickerLabels[type]}
+                  <span className="line-clamp-2 min-h-10 w-full text-center text-[12px] leading-5 font-semibold [overflow-wrap:anywhere]">
+                    {transactionTypeLabels[type]}
                   </span>
                 </button>
               );

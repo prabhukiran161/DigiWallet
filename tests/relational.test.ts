@@ -18,6 +18,7 @@ test('normalized PostgreSQL schema, targeted account writes, ledger rules and ro
   try {
     await sql.unsafe(await readFile(resolve('database/schema.sql'),'utf8'));
     await sql.unsafe(await readFile(resolve('database/002_institution_logos.sql'),'utf8'));
+    await sql.unsafe(await readFile(resolve('database/003_category_colors.sql'),'utf8'));
   } finally {await sql.end();}
   store=openPostgresStore(url!,{schema});const s=store;
   const u=await s.register('test@example.test','long-test-password','Test');

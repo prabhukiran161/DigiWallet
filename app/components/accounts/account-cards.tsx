@@ -9,7 +9,6 @@ export function AccountCards({
   wallet,
   accounts,
   month,
-  save,
   compact = false,
   hidden = false,
   initialSelected = "",
@@ -40,7 +39,6 @@ export function AccountCards({
           account={detail}
           wallet={wallet}
           month={month}
-          save={save}
           hidden={hidden}
           onClose={() => setSelected("")}
         />

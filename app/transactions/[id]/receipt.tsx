@@ -1,6 +1,7 @@
 import type { Wallet, Journal } from "@/lib/ledger";
 import { labels } from "@/lib/display";
 import { CategoryIcon } from "../../components/category-icon";
+import { categoryBadgeStyle } from "@/lib/category-colors";
 import { amountLabel } from "../../components/history";
 
 const FIELD_LABELS: Record<string, string> = {
@@ -46,7 +47,8 @@ export function TransactionReceipt({
   return (
     <>
       <div className="transaction-receipt">
-        <span className="receipt-icon">
+        <span className="receipt-icon"
+          style={categoryBadgeStyle(wallet.categories.find((category) => category.id === event.category)?.color)}>
           <CategoryIcon wallet={wallet} category={event.category} size={29} />
         </span>
         <span className="pill">{labels[event.type]}</span>

@@ -9,10 +9,10 @@ export function useInstitutionCatalog() {
   return useContext(InstitutionCatalog);
 }
 
-export function InstitutionMark({ src, children }: { src?: string; children: ReactNode }) {
+export function InstitutionMark({ src, size = 24, children }: { src?: string; size?: number; children: ReactNode }) {
   const [failed, setFailed] = useState<string>();
   return src && failed !== src ? (
-    <img src={src} alt="" width={24} height={24} className="size-6 object-contain"
+    <img src={src} alt="" width={size} height={size} className="object-contain"
       loading="lazy" onError={() => setFailed(src)} />
   ) : children;
 }

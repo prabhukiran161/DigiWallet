@@ -1,7 +1,7 @@
 import { Plus } from "lucide-react";
 import { balance, type Wallet, type EventType } from "@/lib/ledger";
 import { currency } from "@/lib/display";
-import { Empty, type Save } from "../components/primitives";
+import { Empty } from "../components/primitives";
 import { AccountCards } from "../components/accounts";
 import { ACCOUNT_FILTERS, type AccountFilter } from "./types";
 
@@ -10,7 +10,6 @@ interface AccountsViewProps {
   month: string;
   filter: AccountFilter;
   onSelectFilter: (filter: AccountFilter) => void;
-  save: Save;
   onRecord: (type: EventType) => void;
   onOpenAddAccount: () => void;
 }
@@ -20,7 +19,6 @@ export function AccountsView({
   month,
   filter,
   onSelectFilter,
-  save,
   onRecord,
   onOpenAddAccount,
 }: AccountsViewProps) {
@@ -96,7 +94,6 @@ export function AccountsView({
           wallet={wallet}
           accounts={accounts}
           month={month}
-          save={save}
           initialSelected={initialAccount}
         />
       ) : (
@@ -115,7 +112,6 @@ export function AccountsView({
             wallet={wallet}
             accounts={wallet.accounts.filter((a) => a.archived && !a.closedAt)}
             month={month}
-            save={save}
           />
         </details>
       )}

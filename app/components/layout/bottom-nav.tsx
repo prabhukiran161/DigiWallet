@@ -1,6 +1,6 @@
 import {
   House,
-  WalletCards,
+  Landmark,
   Plus,
   History as HistoryIcon,
   ChartNoAxesCombined,
@@ -20,14 +20,14 @@ export function BottomNav({ view, onNavigate, onRecord }: BottomNavProps) {
         aria-current={view === "Home" ? "page" : undefined}
         onClick={() => onNavigate("Home")}
       >
-        <House size={21} />
+        <House size={21} data-outline-only />
         <span>Home</span>
       </button>
       <button
         aria-current={view === "Accounts" ? "page" : undefined}
         onClick={() => onNavigate("Accounts")}
       >
-        <WalletCards size={21} />
+        <Landmark size={21} data-outline-only />
         <span>Accounts</span>
       </button>
       <button
